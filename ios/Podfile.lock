@@ -1,0 +1,34 @@
+PODS:
+  - Flutter (1.0.0)
+  - Mapbox-iOS-SDK (5.5.0)
+  - MapboxAnnotationExtension (0.0.1-beta.1):
+    - Mapbox-iOS-SDK (~> 5.2)
+  - mapir_gl (0.0.1):
+    - Flutter
+    - Mapbox-iOS-SDK (~> 5.5.0)
+    - MapboxAnnotationExtension (~> 0.0.1-beta.1)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - mapir_gl (from `.symlinks/plugins/mapir_gl/ios`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Mapbox-iOS-SDK
+    - MapboxAnnotationExtension
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  mapir_gl:
+    :path: ".symlinks/plugins/mapir_gl/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  Mapbox-iOS-SDK: 7fa66a27e586acb14c7f32ec5a487343e3994451
+  MapboxAnnotationExtension: d66de5561562c9d940153c0135725e671407b781
+  mapir_gl: 437a24ea30221b33ebd2a8f2f35ae0d10ea021d2
+
+PODFILE CHECKSUM: e45c292f618eeca3034958d33b444b6e1249b55f
+
+COCOAPODS: 1.7.5
