@@ -1,0 +1,44 @@
+{
+  "languages": {
+    "farsi": "فارسی",
+    "english": "English"
+  },
+  "app": {
+    "title": "4Kish"
+  },
+  "menu": {
+    "taxi_accepted": "Taxi Accepted",
+    "taxi_query": "Taxi Query"
+  },
+  "taxi_query": {
+    "pickup": {
+      "label": "Pickup",
+      "question": "Please select the pickup address."
+    },
+    "destination": {
+      "label": "Destination",
+      "question": "Please select the destination address."
+    },
+    "price": "{price} T",
+    "request": "Request a taxi",
+    "cancel_request": "To cancel hold",
+    "cancel_ride": "To cancel hold",
+    "callDriver": "Call Driver",
+    "options": "Options",
+    "distance": "Distance",
+    "eta": "Est. Arrival",
+    "figure": "Price",
+    "distanceKilometer": "{distance} km",
+    "etaMinute": "{eta} minute(s)",
+    "paymentMethod": "payment"
+  },
+  "VehicleType": {
+    "sedan": "Sedan",
+    "hatchback": "Hatchback",
+    "van": "Van"
+  },
+  "PaymentType": {
+    "cash": "Cash",
+    "credit": "Credit"
+  }
+}

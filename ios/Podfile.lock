@@ -1,5 +1,7 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_device_locale (0.0.1):
+    - Flutter
   - Mapbox-iOS-SDK (5.5.0)
   - MapboxAnnotationExtension (0.0.1-beta.1):
     - Mapbox-iOS-SDK (~> 5.2)
@@ -7,10 +9,20 @@ PODS:
     - Flutter
     - Mapbox-iOS-SDK (~> 5.5.0)
     - MapboxAnnotationExtension (~> 0.0.1-beta.1)
+  - shared_preferences (0.0.1):
+    - Flutter
+  - shared_preferences_macos (0.0.1):
+    - Flutter
+  - shared_preferences_web (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_device_locale (from `.symlinks/plugins/flutter_device_locale/ios`)
   - mapir_gl (from `.symlinks/plugins/mapir_gl/ios`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+  - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
+  - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -20,14 +32,26 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_device_locale:
+    :path: ".symlinks/plugins/flutter_device_locale/ios"
   mapir_gl:
     :path: ".symlinks/plugins/mapir_gl/ios"
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
+  shared_preferences_macos:
+    :path: ".symlinks/plugins/shared_preferences_macos/ios"
+  shared_preferences_web:
+    :path: ".symlinks/plugins/shared_preferences_web/ios"
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_device_locale: bd88cfdfdcae58b2a9d5ec05389fd99631c9dca7
   Mapbox-iOS-SDK: 7fa66a27e586acb14c7f32ec5a487343e3994451
   MapboxAnnotationExtension: d66de5561562c9d940153c0135725e671407b781
   mapir_gl: 437a24ea30221b33ebd2a8f2f35ae0d10ea021d2
+  shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
+  shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
+  shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
 
 PODFILE CHECKSUM: e45c292f618eeca3034958d33b444b6e1249b55f
 

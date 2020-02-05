@@ -1,0 +1,44 @@
+{
+  "languages": {
+    "farsi": "فارسی",
+    "english": "English"
+  },
+  "app": {
+    "title": "فورکیش"
+  },
+  "menu": {
+    "taxi_accepted": "تاکسی یافت شد",
+    "taxi_query": "جستجوی تاکسی"
+  },
+  "taxi_query": {
+    "pickup": {
+      "label": "مبدا",
+      "question": "لطفا آدرس مبدا را انتخاب نمایید."
+    },
+    "destination": {
+      "label": "مقصد",
+      "question": "لطفا آدرس مقصد را انتخاب نمایید."
+    },
+    "price": "\u200e{price} T",
+    "request": "درخواست تاکسی",
+    "cancel_request": "برای لغو سفر نگهدارید",
+    "cancel_ride": "برای لغو سفر نگهدارید",
+    "callDriver": "تماس با راننده",
+    "options": "گزینه‌ها",
+    "distance": "فاصله",
+    "eta": "زمان رسیدن",
+    "figure": "مبلغ",
+    "distanceKilometer": "{distance} گیلومتر",
+    "etaMinute": "{eta} دقیقه",
+    "paymentMethod": "روش پرداخت"
+  },
+  "VehicleType": {
+    "sedan": "شخصی",
+    "hatchback": "هاچ‌بک",
+    "van": "ون"
+  },
+  "PaymentType": {
+    "cash": "نقد",
+    "credit": "اعتبار"
+  }
+}
