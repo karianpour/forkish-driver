@@ -7,8 +7,20 @@
     "title": "4Kish"
   },
   "menu": {
-    "taxi_accepted": "Taxi Accepted",
+    "login": "Login",
     "taxi_query": "Taxi Query"
+  },
+  "login": {
+    "welcome": "Welcome back!",
+    "welcome_desc": "Login to continue using 4Kish",
+    "mobile": "Mobile",
+    "login": "Login",
+    "confirm_title": "Please Enter Confirmation Code",
+    "confirm_statement": "You Will Receive a Four Digits Confirmation Code Within 3 Minutes.",
+    "resend_code_after": "Resend Code After",
+    "mobile_alert": "You Are Trying To Login With {mobile}",
+    "change_number": "Change the Number",
+    "confirm": "Confirm"
   },
   "taxi_query": {
     "pickup": {

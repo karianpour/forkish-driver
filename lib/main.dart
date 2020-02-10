@@ -2,6 +2,8 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:for_kish/pages/login/login.dart';
+import 'package:for_kish/pages/taxi_query/test.dart';
 import 'package:for_kish/translate_preferences.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -100,7 +102,8 @@ Widget taxiScaffold(BuildContext context, { @required Widget body }) {
 
 final Map<String, WidgetBuilder> forKishRoutes = {
   '/taxi_query': (context) => TaxiScaffold(body: TaxiQuery()),
-  '/taxi_accepted': (context) => TaxiScaffold(body: TaxiQuery()),
+  '/login': (context) => TaxiScaffold(body: LoginManager()),
+  '/test': (context) => TaxiScaffold(body: Test()),
 };
 
 @widget
@@ -131,10 +134,17 @@ Widget appDrawer(BuildContext context) {
           },
         ),
         ListTile(
-          title: Text(translate('menu.taxi_accepted')),
+          title: Text(translate('menu.login')),
           onTap: () {
             Navigator.of(context).pop();
-            Navigator.pushNamed(context, '/taxi_accepted');
+            Navigator.pushNamed(context, '/login');
+          },
+        ),
+        ListTile(
+          title: Text(translate('test')),
+          onTap: () {
+            Navigator.of(context).pop();
+            Navigator.pushNamed(context, '/test');
           },
         ),
         ListTile(

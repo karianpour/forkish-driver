@@ -7,8 +7,20 @@
     "title": "فورکیش"
   },
   "menu": {
-    "taxi_accepted": "تاکسی یافت شد",
+    "login": "ورود",
     "taxi_query": "جستجوی تاکسی"
+  },
+  "login": {
+    "welcome": "خوش آمدید",
+    "welcome_desc": "جهت استفاده از اپلیکیشن 4Kish وارد شوید",
+    "mobile": "شماره تلفن همراه",
+    "login": "ورود",
+    "confirm_title": "لطفا کد تایید را وارد نمایید",
+    "confirm_statement": "به شماره شما یک کد تایید ۴ رقمی ارسال می‌گردد",
+    "resend_code_after": "ارسال مجدد پس از",
+    "mobile_alert": "شما در حال ورود با شماره \u200e{mobile} هستید.",
+    "change_number": "جهت تغییر شماره کلیک نمایید",
+    "confirm": "تایید"
   },
   "taxi_query": {
     "pickup": {
@@ -28,7 +40,7 @@
     "distance": "فاصله",
     "eta": "زمان رسیدن",
     "figure": "مبلغ",
-    "distanceKilometer": "{distance} گیلومتر",
+    "distanceKilometer": "{distance} کیلومتر",
     "etaMinute": "{eta} دقیقه",
     "paymentMethod": "روش پرداخت"
   },

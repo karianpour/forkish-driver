@@ -1,23 +1,31 @@
 import 'dart:math';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:for_kish/helpers/types.dart';
-import 'package:mapir_gl/mapir_gl.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
+import 'package:rxdart/rxdart.dart';
 
-final LatLng center = const LatLng(26.542065, 53.987069); // center of kish island
+// final LatLng center = const LatLng(26.542065, 53.987069); // center of kish island
 
 class MapControllerWrapper {
-  MapirMapController _controller;
-  Symbol _pickupSymbol;
-  Symbol _destinationSymbol;
+  MapController controller;
+
+  Position Function() currentLocation;
+
+  void Function(bool c) setRequestingLocation;
+  bool Function() getRequestingLocation;
+  void Function(Location location) setLocation;
+  Location Function() getLocation;
+  void Function(LatLng center) centerChanged;
+
   void Function(Location location) setPickup;
   Location Function() getPickup;
   void Function(Location location) setDestination;
   Location Function() getDestination;
-  void Function(bool c) setPickupConfirmed;
-  bool Function() getPickupConfirmed;
-  void Function(bool c) setDestinationConfirmed;
-  bool Function() getDestinationConfirmed;
   void Function(bool c) setRequestingOffers;
   bool Function() getRequestingOffers;
   void Function(List<Offer> c) setOffers;
@@ -32,12 +40,16 @@ class MapControllerWrapper {
   RideApproach Function() getRideApproach;
   void Function(RideProgress c) setRideProgress;
   RideProgress Function() getRideProgress;
+  void Function() cancelRide;
 
   MapControllerWrapper({
+    this.controller,
+    this.currentLocation,
+    this.setRequestingLocation, this.getRequestingLocation,
+    this.setLocation, this.getLocation,
+    this.centerChanged,
     this.setPickup, this.getPickup,
     this.setDestination, this.getDestination,
-    this.setPickupConfirmed, this.getPickupConfirmed,
-    this.setDestinationConfirmed, this.getDestinationConfirmed,
     this.setRequestingOffers, this.getRequestingOffers,
     this.setOffers, this.getOffers,
     this.setSelectedOffer, this.getSelectedOffer,
@@ -45,212 +57,36 @@ class MapControllerWrapper {
     this.setRide, this.getRide,
     this.setRideApproach, this.getRideApproach,
     this.setRideProgress, this.getRideProgress,
+    this.cancelRide,
   });
-
-  void onMapCreated(MapirMapController controller) {
-    this._controller = controller;
-    _controller.onSymbolTapped.add(_onSymbolTapped);
-    // _controller.addCircle(
-    //   CircleOptions(
-    //     geometry: center,
-    //     circleRadius: 60.0,
-    //     circleStrokeColor: "#0000FF",
-    //     circleStrokeWidth: 1.0,
-    //     circleOpacity: 0.5,
-    //     circleColor: "#FFFFFF",
-    //     draggable: true,
-    //   ),
-    // );
-
-    // _controller.addCircle(
-    //   CircleOptions(
-    //     geometry: LatLng(
-    //       26.475096, 53.869411
-    //     ),
-    //     circleRadius: 60.0,
-    //     circleStrokeColor: "#0000FF",
-    //     circleStrokeWidth: 1.0,
-    //     circleOpacity: 0.5,
-    //     circleColor: "#FF0000",
-    //     draggable: true,
-    //   ),
-    // );
-    // _controller.addCircle(
-    //   CircleOptions(
-    //     geometry: LatLng(
-    //       26.604128, 54.059012,
-    //     ),
-    //     circleRadius: 60.0,
-    //     circleStrokeColor: "#0000FF",
-    //     circleStrokeWidth: 1.0,
-    //     circleOpacity: 0.5,
-    //     circleColor: "#00FF00",
-    //     draggable: true,
-    //   ),
-    // );
-
-    // _controller.addSymbol(
-    //   SymbolOptions(
-    //     // iconRotate: 100,
-    //     iconSize: 3.0,
-    //     iconOpacity: 1.0,
-    //     // iconOffset: Offset(0, -11),
-    //     geometry: center,
-    //     iconImage: "assets/map/marker.png",
-    //     draggable: true,
-    //   )
-    // );
-    moveToMyLocation();
-  }
 
   void moveToMyLocation() async {
     try{
       // final latlon = await _controller.requestMyLocationLatLng();
       // await Future.delayed(Duration(seconds: 5));
-      // TODO get the device location
-      final latlon = center;
-      _controller.moveCamera(CameraUpdate.newLatLng(latlon));
+      final location = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      print(location.toJson());
+
+      final latlon = LatLng(location.latitude, location.longitude);
+      controller.move(latlon, controller.zoom);
     }catch(err){
       print(err);
     }
   }
 
-  void onMapClicked(Point<double> point, LatLng coordinates){
-    print("${_controller?.cameraPosition?.target?.toString()} ${_controller?.cameraPosition?.zoom?.toString()}");
-    // this.setPickup("Cli ${_controller?.cameraPosition?.target?.latitude} , ${_controller?.cameraPosition?.target?.longitude}");
-    // _controller.addCircle(
-    //   CircleOptions(
-    //     geometry: LatLng(
-    //       coordinates.latitude,
-    //       coordinates.longitude,
-    //     ),
-    //     circleRadius: 60.0,
-    //     circleStrokeColor: "#0000FF",
-    //     circleStrokeWidth: 1.0,
-    //     circleOpacity: 0.0,
-    //     circleColor: "#FFFFFF",
-    //     draggable: false,
-    //   ),
-    // );
-
-    // _controller.addSymbol(
-    //   SymbolOptions(
-    //     // iconRotate: 100,
-    //     iconSize: 1.0,
-    //     iconOpacity: 1.0,
-    //     iconOffset: Offset(0, -11),
-    //     geometry: LatLng(coordinates.latitude, coordinates.longitude),
-    //     iconImage: "assets/map/marker.png",
-    //     draggable: true,
-    //     zIndex: 100,
-    //   ));
-  }
-
-  // void _updateSelectedSymbol(SymbolOptions changes) {
-  //   _controller.updateSymbol(_selectedSymbol, changes);
-  // }
-
-  void _onSymbolTapped(Symbol symbol) {
-    if(_pickupSymbol==symbol){
-      setPickupConfirmed(true);
-    }
-    if(_destinationSymbol==symbol){
-      setDestinationConfirmed(true);
-    }
-    // if (_selectedSymbol != null) {
-    //   _updateSelectedSymbol(
-    //     const SymbolOptions(iconSize: 1.0),
-    //   );
-    // }
-    // _selectedSymbol = symbol;
-    // _updateSelectedSymbol(
-    //   SymbolOptions(
-    //     iconSize: 5.0,
-    //   ),
-    // );
-  }
-
   void dispose(){
-    _controller?.onSymbolTapped?.remove(_onSymbolTapped);
-    _controller = null;
+    controller = null;
   }
 
-  // void onCameraTrackingChanged(MyLocationTrackingMode mode) {
-  //   print(mode);
-  // }
-
-  // void onCameraTrackingDismissed() {
-  //   print('dismissed');
-  //   this.setPickup("${_controller?.cameraPosition?.target?.latitude} , ${_controller?.cameraPosition?.target?.longitude}");
-  // }
-
-  void setPickupSymbol(Location pickup) async {
-    if(_pickupSymbol==null){
-      if(pickup!=null){
-        _pickupSymbol = await _controller.addSymbol(
-          SymbolOptions(
-            // iconRotate: 100,
-            iconSize: 3.0,
-            iconOpacity: 1.0,
-            iconOffset: Offset(0, -11),
-            geometry: LatLng(pickup.lat, pickup.lng),
-            iconImage: "assets/map/pickup.png",
-            draggable: false,
-            // textField: 'Pickup',
-          )
-        );
-      }
-    }else{
-      if(pickup!=null){
-        await _controller.updateSymbol(_pickupSymbol, SymbolOptions(
-          geometry: LatLng(pickup.lat, pickup.lng),
-        ));
-      }else{
-        await _controller.removeSymbol(_pickupSymbol);
-        _pickupSymbol = null;
-      }
-    }
-    if(_pickupSymbol!=null){
-      await _controller.moveCamera(CameraUpdate.newLatLng(_pickupSymbol.options.geometry));
-    }else{
-      setPickupConfirmed(false);
-    }
-  }
-
-  void setDestinationSymbol(Location destination) async {
-    if(_destinationSymbol==null){
-      if(destination!=null){
-        _destinationSymbol = await _controller.addSymbol(
-          SymbolOptions(
-            // iconRotate: 100,
-            iconSize: 3.0,
-            iconOpacity: 1.0,
-            iconOffset: Offset(0, -11),
-            geometry: LatLng(destination.lat, destination.lng),
-            iconImage: "assets/map/destination.png",
-            draggable: false,
-            // textField: 'Destination',
-          )
-        );
-      }
-    }else{
-      if(destination!=null){
-        await _controller.updateSymbol(_destinationSymbol, SymbolOptions(
-          geometry: LatLng(destination.lat, destination.lng),
-        ));
-      }else{
-        await _controller.removeSymbol(_destinationSymbol);
-        _destinationSymbol = null;
-      }
-    }
-    if(_destinationSymbol!=null){
-      await _controller.moveCamera(CameraUpdate.newLatLng(_destinationSymbol.options.geometry));
-    }else{
-      setDestinationConfirmed(false);
+  void confirmed() {
+    if(getPickup()==null){
+      setPickup(getLocation());
+    }else if(getDestination()==null){
+      setDestination(getLocation());
     }
   }
 }
-
+    
 MapControllerWrapper useMapControllerHook() {
   return Hook.use(_MapControllerHook());
 }
@@ -260,22 +96,28 @@ class _MapControllerHook extends Hook<MapControllerWrapper> {
 
   // const _MapControllerHook({
     // @required this.controller
-  // });
-
-  @override
   _MapControllerHookState createState() => _MapControllerHookState();
 }
 
 class _MapControllerHookState extends HookState<MapControllerWrapper, _MapControllerHook> {
   MapControllerWrapper _wrapper;
+
+  MapController _controller;
+  bool firstTry = true;
+  Position _currentLocation;
+  StreamSubscription<Position> _positionStream;
+
+  final _locationOnChange = new BehaviorSubject<LatLng>();
+  bool _requestingLocation;
+  Location _location;
+
   Location _pickup;
-  bool _pickupConfirmed;
   Location _destination;
-  bool _destinationConfirmed;
   bool _requestingOffers;
   List<Offer> _offers;
   Offer _selectedOffer;
   bool _requestingRide;
+  bool _requestCancelled;
   Ride _ride;
   RideApproach _rideApproach;
   RideProgress _rideProgress;
@@ -283,21 +125,51 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
   @override
   void initHook() {
     super.initHook();
+
+    var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 50);
+
+    _positionStream = Geolocator().getPositionStream(locationOptions).listen(
+      (Position position) {
+        setState((){
+          _currentLocation = position;
+        });
+        if(firstTry){
+          _controller.move(LatLng(position.latitude, position.longitude), _controller.zoom);
+          firstTry = false;
+        }
+        print(position == null ? 'Unknown' : position.latitude.toString() + ', ' + position.longitude.toString());
+      }
+    );
+
+    _locationOnChange.debounceTime(Duration(milliseconds: 500)).listen((center) {
+      // print(center.toString());
+      queryForNewLocation(center);
+    });
+
+    _controller = MapController();
+
+    _requestingLocation = false;
+
     _pickup = null;
-    _pickupConfirmed = false;
     _destination = null;
-    _destinationConfirmed = false;
     _requestingOffers = false;
     _requestingRide = false;
+    _requestCancelled = false;
     _wrapper = MapControllerWrapper(
+      controller: _controller,
+
+      currentLocation: currentLocation,
+
+      setRequestingLocation: setRequestingLocation,
+      getRequestingLocation: getRequestingLocation,
+      setLocation: setLocation,
+      getLocation: getLocation,
+      centerChanged: centerChanged,
+
       setPickup: setPickup,
       getPickup: getPickup,
-      setPickupConfirmed: setPickupConfirmed,
-      getPickupConfirmed: getPickupConfirmed,
       setDestination: setDestination,
       getDestination: getDestination,
-      setDestinationConfirmed: setDestinationConfirmed,
-      getDestinationConfirmed: getDestinationConfirmed,
       setRequestingOffers: setRequestingOffers,
       getRequestingOffers: getRequestingOffers,
       setOffers: setOffers,
@@ -312,14 +184,38 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
       getRideApproach: getRideApproach,
       setRideProgress: setRideProgress,
       getRideProgress: getRideProgress,
+      cancelRide: cancelRide,
     );
   }
 
+  Position currentLocation() => _currentLocation;
+
+  void setRequestingLocation(bool c){
+    setState((){
+      this._requestingLocation = c;
+    });
+  }
+
+  bool getRequestingLocation(){
+    return this._requestingLocation;
+  }
+
+  void setLocation(Location p){
+    setState((){
+      this._location = p;
+    });
+  }
+
+  Location getLocation(){
+    return this._location;
+  }
+
   void setPickup(Location p){
+    if(_ride!=null || _requestingRide) return;
     setState((){
       this._pickup = p;
     });
-    _wrapper.setPickupSymbol(_pickup);
+    requestOffers();
   }
 
   Location getPickup(){
@@ -327,36 +223,15 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
   }
 
   void setDestination(Location l){
+    if(_ride!=null || _requestingRide) return;
     setState((){
       this._destination = l;
     });
-    _wrapper.setDestinationSymbol(_destination);
+    requestOffers();
   }
 
   Location getDestination(){
     return this._destination;
-  }
-
-  void setPickupConfirmed(bool c){
-    setState((){
-      this._pickupConfirmed = c;
-    });
-    requestOffers();
-  }
-
-  bool getPickupConfirmed(){
-    return this._pickupConfirmed;
-  }
-
-  void setDestinationConfirmed(bool c){
-    setState((){
-      this._destinationConfirmed = c;
-    });
-    requestOffers();
-  }
-
-  bool getDestinationConfirmed(){
-    return this._destinationConfirmed;
   }
 
   void setRequestingOffers(bool c){
@@ -441,12 +316,45 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
   @override
   void dispose() {
     _wrapper.dispose();
+    _positionStream.cancel();
     super.dispose();
   }
 
+  void centerChanged(LatLng center) {
+    _locationOnChange.add(center);
+  }
+
+  void queryForNewLocation(LatLng center) async {
+    try{
+      setState((){
+        this._requestingLocation = true;
+        this._location = null;
+      });
+      final location = await queryLocation(center.latitude, center.longitude);
+      setState((){
+        this._requestingLocation = false;
+        this._location = location;
+      });
+    }catch(err){
+      print(err);
+      setState((){
+        this._requestingLocation = false;
+        this._location = null;
+      });
+    }
+  }
+
   void requestOffers() async {
-    if(!_destinationConfirmed || !_pickupConfirmed)
+    if(_destination==null || _pickup==null)
       return;
+
+    _controller.fitBounds(LatLngBounds(
+      LatLng(_pickup.lat, _pickup.lng),
+      LatLng(_destination.lat, _destination.lng),
+    ), options: FitBoundsOptions(
+      padding: const EdgeInsets.only(top: 250.0, bottom: 300, left: 30, right: 30),
+    ));
+
     setState((){
       this._requestingOffers = true;
       this._offers = null;
@@ -469,9 +377,10 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
   }
 
   void requestRide() async {
-    if(!_destinationConfirmed || !_pickupConfirmed || _selectedOffer == null)
+    if(_destination==null || _pickup==null || _selectedOffer == null)
       return;
     setState((){
+      this._requestCancelled = false;
       this._requestingRide = true;
       this._ride = null;
       this._rideApproach = null;
@@ -479,6 +388,10 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
     });
     try{
       final rideAndApproch = await fetchRide(this._pickup, this._destination, this._selectedOffer);
+      // K1 : it might be the case the use requet , cancel , and request again, I have to find out which answer is canceled.
+      if(this._requestCancelled){
+        return;
+      }
       setState((){
         this._requestingRide = false;
         this._ride = rideAndApproch.ride;
@@ -494,7 +407,29 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
       });
     }
   }
+
+  void cancelRide() {
+    setState((){
+      this._requestCancelled = true;
+      this._requestingRide = false;
+      this._ride = null;
+      this._rideApproach = null;
+      this._rideProgress = null;
+    });
+  }
+
 }
+
+var i = 0;
+
+Future<Location> queryLocation(double lat, double lng) async {
+  await Future.delayed(Duration(milliseconds: 500));
+  i++;
+  return Location(lat: lat, lng: lng, name: 'اینجا ${round(lat, decimals: 2).toString()}, ${round(lng, decimals: 2).toString()}', location: 'اونجا $i');
+}
+
+// });
+
 
 Future<List<Offer>> fetchOffers(Location pickup, Location destination) async{
   await Future.delayed(Duration(milliseconds: 2000));

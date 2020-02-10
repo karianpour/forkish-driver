@@ -29,11 +29,13 @@ dependencies:
   flutter_hooks: ^0.7.0
   rxdart: ^0.23.1
   functional_widget_annotation: ^0.5.1
-  mapir_gl: ^1.0.2
   provider: ^4.0.2
   shared_preferences: ^0.5.6+1
   flutter_translate: ^1.5.7
   fluro: ^1.5.1
+  url_launcher: ^5.4.1
+  geolocator: ^5.2.1
+  flutter_map: ^0.8.2
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +73,7 @@ flutter:
      - assets/i18n/
      - assets/VehicleType/
      - assets/sample/
+     - assets/images/
   #  - images/a_dot_burr.jpeg
   #  - images/a_dot_ham.jpeg
 

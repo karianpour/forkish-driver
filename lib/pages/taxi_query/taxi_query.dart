@@ -1,20 +1,23 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_translate/flutter_translate.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong/latlong.dart';
 import 'package:for_kish/helpers/number.dart';
 import 'package:for_kish/helpers/types.dart';
 import 'package:for_kish/pages/address/address_query.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-import 'package:mapir_gl/mapir_gl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../hooks/map_hook.dart';
 
 part 'taxi_query.g.dart';
 
-final LatLng center = const LatLng(26.532065, 53.977069); // center of kish island
+final LatLng center = LatLng(26.532065, 53.977069); // center of kish island
+// const leafLetAccessToken = "pk.eyJ1Ijoia2FyaWFucG91ciIsImEiOiJjazZkbGJtMWYwODNzM2VudmVpdzU5dDJhIn0.LCWmMFkfKR_qDeed8Gsnhw";
+const leafLetAccessToken = "pk.eyJ1Ijoia2FyaWFucG91ciIsImEiOiJjazZnY21iMW4wMnV0M21wOGFwazl0MXVkIn0.58NkL2VWsgUo16JGBz2CZw";
 
 @widget
 Widget taxiQuery(BuildContext context) {
@@ -23,14 +26,42 @@ Widget taxiQuery(BuildContext context) {
   return Stack(
     children: <Widget>[
       MapArea(wrapper: wrapper),
-      if(wrapper.getPickup()!=null || wrapper.getDestination()!=null) AddressPanel(wrapper: wrapper),
-      if(!wrapper.getPickupConfirmed()) PickupAlert(wrapper: wrapper),
-      if(wrapper.getPickupConfirmed() && !wrapper.getDestinationConfirmed()) DestinationAlert(wrapper: wrapper),
-      if(wrapper.getPickupConfirmed() && wrapper.getDestinationConfirmed() && !wrapper.getRequestingRide() && wrapper.getRide()==null) OfferSelection(wrapper: wrapper),
-      if(wrapper.getRequestingRide()) RideQueryPanel(),
+      if(wrapper.getPickup()==null || wrapper.getDestination()==null) CenterMarker(wrapper: wrapper),
+      AddressPanel(wrapper: wrapper),
+      if(wrapper.getPickup()==null) PickupAlert(wrapper: wrapper),
+      if(wrapper.getPickup()!=null && wrapper.getDestination()==null) DestinationAlert(wrapper: wrapper),
+      if(wrapper.getPickup()!=null && wrapper.getDestination()!=null && !wrapper.getRequestingRide() && wrapper.getRide()==null) OfferSelection(wrapper: wrapper),
+      if(wrapper.getRequestingRide()) RideQueryPanel(wrapper: wrapper,),
       if(wrapper.getRide()!=null) RidePanel(wrapper: wrapper),
     ],
   );
+}
+
+class CenterMarker extends StatelessWidget {
+  const CenterMarker({
+    Key key,
+    @required this.wrapper,
+  }) : super(key: key);
+
+  final MapControllerWrapper wrapper;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        onTap: (){
+          wrapper.confirmed();
+        },
+        child: SizedBox(
+          height: 80,
+          child: Align(
+            child: Image.asset('assets/map/marker.png'),
+            alignment: Alignment.topCenter,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class RidePanel extends StatelessWidget {
@@ -45,8 +76,8 @@ class RidePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 40,
-      left: 40,
-      right: 40,
+      left: 20,
+      right: 20,
       // height: 250,
       child: Column(
         children: <Widget>[
@@ -91,8 +122,9 @@ class RidePanel extends StatelessWidget {
                 ),
               ),
               color: Colors.blue,
-              onPressed: (){
-                // wrapper.setRequestingRide(true);
+              onPressed: (){},
+              onLongPress: (){
+                wrapper.cancelRide();
               },
             ),
           ),
@@ -117,8 +149,14 @@ class RidePanel extends StatelessWidget {
             //   ),
             // ),
             color: Colors.blue,
-            onPressed: (){
-              print('call');
+            onPressed: () async {
+              print('call ${wrapper.getRide().driver.phone}');
+              if(await canLaunch("tel:${wrapper.getRide().driver.phone}")){
+                var r = await launch("tel:${wrapper.getRide().driver.phone}");
+                print("result : $r");
+              }else{
+                print('cant lunch');
+              }
             },
           ),
           RaisedButton(
@@ -191,6 +229,7 @@ class RidePanel extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(top: BorderSide(width: 1, color: Colors.black54))
       ),
+      //singlechilescrollview
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
@@ -298,14 +337,16 @@ class RideDatalet extends StatelessWidget {
 class RideQueryPanel extends StatelessWidget {
   const RideQueryPanel({
     Key key,
+    @required this.wrapper,
   }) : super(key: key);
+  final MapControllerWrapper wrapper;
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 40,
-      left: 40,
-      right: 40,
+      left: 20,
+      right: 20,
       child: Column(
         children: <Widget>[
           Container(
@@ -333,8 +374,9 @@ class RideQueryPanel extends StatelessWidget {
                 ),
               ),
               color: Colors.blue,
-              onPressed: (){
-                // wrapper.setRequestingRide(true);
+              onPressed: (){},
+              onLongPress: (){
+                wrapper.cancelRide();
               },
             ),
           ),
@@ -356,8 +398,8 @@ class OfferSelection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 40,
-      left: 40,
-      right: 40,
+      left: 20,
+      right: 20,
       child: Container(
         child: Column(
           children: <Widget>[
@@ -484,29 +526,74 @@ class MapArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MapirMap(
-      onMapCreated: wrapper.onMapCreated,
-      onMapClick: wrapper.onMapClicked,
-      // onCameraTrackingChanged: wrapper.onCameraTrackingChanged,
-      // onCameraTrackingDismissed: wrapper.onCameraTrackingDismissed,
-      initialCameraPosition: CameraPosition(target: center, zoom: 15),
-      tiltGesturesEnabled: false,
-      trackCameraPosition: true,
-      myLocationEnabled: true,
-      // myLocationRenderMode: MyLocationRenderMode.GPS,
-      // myLocationTrackingMode: MyLocationTrackingMode.TrackingGPS,
-      // compassEnabled: true,
-      compassViewMargins: Point(20, 580),
-      // trackCameraPosition: true,
-      logoViewMargins: Point(-300, 0),
-      // attributionButtonMargins: Point(100, 100),
-      minMaxZoomPreference: const MinMaxZoomPreference(12, 19), // for kish it is good zoom levels
-      cameraTargetBounds: CameraTargetBounds(
-        LatLngBounds(
-          southwest: const LatLng(26.485096, 53.869411),
-          northeast: const LatLng(26.604128, 54.059012)
-        ),
+    return FlutterMap(
+      mapController: wrapper.controller,
+      options: MapOptions(
+        center: center,
+        minZoom: 10,
+        maxZoom: 18,
+        zoom: 15.0,
+        onPositionChanged: (mp, r){
+          wrapper.centerChanged(mp.center);
+        },
+        swPanBoundary: LatLng(26.485096, 53.869411),
+        nePanBoundary: LatLng(26.604128, 54.059012),
       ),
+      layers: [
+        TileLayerOptions(
+          urlTemplate: "https://api.tiles.mapbox.com/v4/"
+              "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
+          additionalOptions: {
+            'accessToken': leafLetAccessToken,
+            'id': 'mapbox.streets',
+          },
+        ),
+        CircleLayerOptions(
+          circles: [
+            if(wrapper.currentLocation()!=null) CircleMarker(
+              point: LatLng(wrapper.currentLocation().latitude, wrapper.currentLocation().longitude),
+              radius: 7,
+              color: Colors.blue,
+            ),
+          ],
+        ),
+        MarkerLayerOptions(
+          markers: [
+            if(wrapper.getPickup()!=null) Marker(
+              width: 40.0,
+              height: 40.0,
+              point: LatLng(wrapper.getPickup().lat, wrapper.getPickup().lng),
+              builder: (ctx) =>
+              Container(
+                child: Image.asset('assets/map/pickup.png'),
+              ),
+              anchorPos: AnchorPos.align(AnchorAlign.top),
+            ),
+            if(wrapper.getDestination()!=null) Marker(
+              width: 40.0,
+              height: 40.0,
+              point: LatLng(wrapper.getDestination().lat, wrapper.getDestination().lng),
+              builder: (ctx) =>
+              Container(
+                child: Image.asset('assets/map/destination.png'),
+              ),
+              anchorPos: AnchorPos.align(AnchorAlign.top),
+            ),
+          ],
+        ),
+        PolylineLayerOptions(
+          polylines: [
+            if(wrapper.getPickup()!=null && wrapper.getDestination()!=null) Polyline(
+              points: [
+                LatLng(wrapper.getPickup().lat, wrapper.getPickup().lng),
+                LatLng(wrapper.getDestination().lat, wrapper.getDestination().lng),
+              ],
+              strokeWidth: 4,
+              color: Colors.purple,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -523,8 +610,8 @@ class DestinationAlert extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 80,
-      left: 40,
-      right: 40,
+      left: 20,
+      right: 20,
       height: 40,
       child: Container(
         decoration: BoxDecoration(
@@ -554,7 +641,8 @@ class DestinationAlert extends StatelessWidget {
                   onTap: () async{
                     final selected = await showSearch(context: context, delegate: AddressSearch(translate('taxi_query.destination.label')));
                     if(selected != null){
-                      wrapper.setDestination(selected);
+                      // wrapper.setLocation(selected);
+                      wrapper.controller.move(LatLng(selected.lat, selected.lng), 14);
                     }
                   },
                   child: Text(
@@ -586,8 +674,8 @@ class PickupAlert extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       bottom: 80,
-      left: 40,
-      right: 40,
+      left: 20,
+      right: 20,
       height: 40,
       child: Container(
         decoration: BoxDecoration(
@@ -617,7 +705,8 @@ class PickupAlert extends StatelessWidget {
                   onTap: () async{
                     final selected = await showSearch(context: context, delegate: AddressSearch(translate('taxi_query.pickup.label')));
                     if(selected != null){
-                      wrapper.setPickup(selected);
+                      // wrapper.setLocation(selected);
+                      wrapper.controller.move(LatLng(selected.lat, selected.lng), 14);
                     }
                   },
                   child: Text(
@@ -649,8 +738,8 @@ class AddressPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       top: 100,
-      left: 40,
-      right: 40,
+      left: 20,
+      right: 20,
       // height: 40,
       child: Container(
         decoration: BoxDecoration(
@@ -665,10 +754,34 @@ class AddressPanel extends StatelessWidget {
         ),
         child: Column(
           children: <Widget>[
+            if(wrapper.getPickup()==null) Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: Image.asset('assets/map/marker.png'),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
+                    child: wrapper.getRequestingLocation() ? Center(child: CircularProgressIndicator()) : Text(
+                      "${wrapper.getLocation()?.name ?? ''}",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             if(wrapper.getPickup()!=null) Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(14.0),
                   child: SizedBox(
                     height: 20,
                     width: 20,
@@ -676,28 +789,55 @@ class AddressPanel extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    "${wrapper.getPickup()?.name ?? ''}",
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
+                    child: Text(
+                      "${wrapper.getPickup()?.name ?? ''}",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
-                if(wrapper.getPickup()!=null) RawMaterialButton(
+                if(wrapper.getPickup()!=null && wrapper.getRide()==null && !wrapper.getRequestingRide()) RawMaterialButton(
                   constraints: BoxConstraints(),
                   padding: EdgeInsets.all(0),
                   onPressed: (){
                     wrapper.setPickup(null);
-                  }, 
+                  },
                   child: Icon(Icons.clear, size: 20),
+                ),
+              ],
+            ),
+            if(wrapper.getPickup()!=null && wrapper.getDestination()==null) Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(14.0),
+                  child: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: Image.asset('assets/map/marker.png'),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
+                    child: wrapper.getRequestingLocation() ? Center(child: CircularProgressIndicator()) : Text(
+                      "${wrapper.getLocation()?.name ?? ''}",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
             if(wrapper.getDestination()!=null) Row(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(14.0),
                   child: SizedBox(
                     height: 20,
                     width: 20,
@@ -705,20 +845,23 @@ class AddressPanel extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Text(
-                    "${wrapper.getDestination().name}",
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 14,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
+                    child: Text(
+                      "${wrapper.getDestination().name}",
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ),
-                if(wrapper.getDestination()!=null) RawMaterialButton(
+                if(wrapper.getDestination()!=null && wrapper.getRide()==null && !wrapper.getRequestingRide()) RawMaterialButton(
                   constraints: BoxConstraints(),
                   padding: EdgeInsets.all(0),
                   onPressed: (){
                     wrapper.setDestination(null);
-                  }, 
+                  },
                   child: Icon(Icons.clear, size: 20),
                 ),
               ],
