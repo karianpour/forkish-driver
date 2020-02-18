@@ -1,4 +1,4 @@
-package org.for_kish.for_kish
+package org.for_kish_driver.for_kish_driver
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

@@ -1,5 +1,5 @@
-name: for_kish
-description: An application to assist people on kish island.
+name: for_kish_driver
+description: An application to for taxi drivers on kish island.
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43

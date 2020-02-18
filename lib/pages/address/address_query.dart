@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:for_kish/api/map.dart';
-import 'package:for_kish/helpers/types.dart';
+import 'package:for_kish_driver/api/map.dart';
+import 'package:for_kish_driver/helpers/types.dart';
 
 class AddressSearch extends SearchDelegate<Location> {
   double lat;

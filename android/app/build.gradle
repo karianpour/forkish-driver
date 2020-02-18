@@ -38,7 +38,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "org.for_kish.for_kish"
+        applicationId "org.for_kish_driver.for_kish_driver"
         minSdkVersion 20
         targetSdkVersion 28
         versionCode flutterVersionCode.toInteger()

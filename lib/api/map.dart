@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:for_kish/helpers/types.dart';
+import 'package:for_kish_driver/helpers/types.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong/latlong.dart';
 
