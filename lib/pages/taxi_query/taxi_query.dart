@@ -21,18 +21,18 @@ const leafLetAccessToken = "pk.eyJ1Ijoia2FyaWFucG91ciIsImEiOiJjazZnY21iMW4wMnV0M
 
 @widget
 Widget taxiQuery(BuildContext context) {
-  final wrapper = useMapControllerHook();
+  final state = useMapControllerHook();
 
   return Stack(
     children: <Widget>[
-      MapArea(wrapper: wrapper),
-      if(wrapper.getPickup()==null || wrapper.getDestination()==null) CenterMarker(wrapper: wrapper),
-      AddressPanel(wrapper: wrapper),
-      if(wrapper.getPickup()==null) PickupAlert(wrapper: wrapper),
-      if(wrapper.getPickup()!=null && wrapper.getDestination()==null) DestinationAlert(wrapper: wrapper),
-      if(wrapper.getPickup()!=null && wrapper.getDestination()!=null && !wrapper.getRequestingRide() && wrapper.getRide()==null) OfferSelection(wrapper: wrapper),
-      if(wrapper.getRequestingRide()) RideQueryPanel(wrapper: wrapper,),
-      if(wrapper.getRide()!=null) RidePanel(wrapper: wrapper),
+      MapArea(state: state),
+      if(state.getPickup()==null || state.getDestination()==null) CenterMarker(state: state),
+      AddressPanel(state: state),
+      if(state.getPickup()==null) PickupAlert(state: state),
+      if(state.getPickup()!=null && state.getDestination()==null) DestinationAlert(state: state),
+      if(state.getPickup()!=null && state.getDestination()!=null && !state.getRequestingRide() && state.getRide()==null) OfferSelection(state: state),
+      if(state.getRequestingRide()) RideQueryPanel(state: state,),
+      if(state.getRide()!=null) RidePanel(state: state),
     ],
   );
 }
@@ -40,22 +40,29 @@ Widget taxiQuery(BuildContext context) {
 class CenterMarker extends StatelessWidget {
   const CenterMarker({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
 
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: GestureDetector(
         onTap: (){
-          wrapper.confirmed();
+          if(!state.getRequestingLocation())
+            state.confirmed();
         },
         child: SizedBox(
           height: 80,
           child: Align(
-            child: Image.asset('assets/map/marker.png'),
+            child: Container(
+              foregroundDecoration: !state.getRequestingLocation() ? null : BoxDecoration(
+                color: Colors.grey,
+                backgroundBlendMode: BlendMode.saturation,
+              ),
+              child: Image.asset('assets/map/marker.png')
+            ),
             alignment: Alignment.topCenter,
           ),
         ),
@@ -67,10 +74,10 @@ class CenterMarker extends StatelessWidget {
 class RidePanel extends StatelessWidget {
   const RidePanel({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
 
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +131,7 @@ class RidePanel extends StatelessWidget {
               color: Colors.blue,
               onPressed: (){},
               onLongPress: (){
-                wrapper.cancelRide();
+                state.cancelRide();
               },
             ),
           ),
@@ -150,9 +157,9 @@ class RidePanel extends StatelessWidget {
             // ),
             color: Colors.blue,
             onPressed: () async {
-              print('call ${wrapper.getRide().driver.phone}');
-              if(await canLaunch("tel:${wrapper.getRide().driver.phone}")){
-                var r = await launch("tel:${wrapper.getRide().driver.phone}");
+              print('call ${state.getRide().driver.phone}');
+              if(await canLaunch("tel:${state.getRide().driver.phone}")){
+                var r = await launch("tel:${state.getRide().driver.phone}");
                 print("result : $r");
               }else{
                 print('cant lunch');
@@ -178,7 +185,7 @@ class RidePanel extends StatelessWidget {
   }
 
   Column buildDriver() {
-    final score = wrapper.getRide().driver.score;
+    final score = state.getRide().driver.score;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -196,7 +203,7 @@ class RidePanel extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(wrapper.getRide().driver.name),
+                  Text(state.getRide().driver.name),
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Row(
@@ -216,7 +223,7 @@ class RidePanel extends StatelessWidget {
         ),
         Container(
           padding: EdgeInsets.only(top: 8, bottom: 12),
-          child: KishVehiclePlate(vehicle: wrapper.getRide().vehicle)
+          child: KishVehiclePlate(vehicle: state.getRide().vehicle)
         ),
       ],
     );
@@ -235,19 +242,19 @@ class RidePanel extends StatelessWidget {
         children: <Widget>[
           RideDatalet(
             label: translate("taxi_query.distance"), 
-            data: translate("taxi_query.distanceKilometer", args: {"distance": formatNumber(context, wrapper.getRideApproach().distance / 1000)}),
+            data: translate("taxi_query.distanceKilometer", args: {"distance": formatNumber(context, state.getRideApproach().distance / 1000)}),
           ),
           RideDatalet(
             label: translate("taxi_query.eta"), 
-            data: translate("taxi_query.etaMinute", args: {"eta": formatNumber(context, (wrapper.getRideApproach().eta / 60).ceil())}),
+            data: translate("taxi_query.etaMinute", args: {"eta": formatNumber(context, (state.getRideApproach().eta / 60).ceil())}),
           ),
           RideDatalet(
             label: translate("taxi_query.figure"), 
-            data: translate('taxi_query.price', args: {'price': formatNumber(context, wrapper.getRide().price)}),
+            data: translate('taxi_query.price', args: {'price': formatNumber(context, state.getRide().price)}),
           ),
           RideDatalet(
             label: translate("taxi_query.paymentMethod"), 
-            data: translate(wrapper.getRide().paymentType.toString()),
+            data: translate(state.getRide().paymentType.toString()),
           ),
         ],
       ),
@@ -337,9 +344,9 @@ class RideDatalet extends StatelessWidget {
 class RideQueryPanel extends StatelessWidget {
   const RideQueryPanel({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
@@ -376,7 +383,7 @@ class RideQueryPanel extends StatelessWidget {
               color: Colors.blue,
               onPressed: (){},
               onLongPress: (){
-                wrapper.cancelRide();
+                state.cancelRide();
               },
             ),
           ),
@@ -389,10 +396,10 @@ class RideQueryPanel extends StatelessWidget {
 class OfferSelection extends StatelessWidget {
   const OfferSelection({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
 
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
@@ -415,15 +422,15 @@ class OfferSelection extends StatelessWidget {
                   offset: Offset(5, 5),
                 )]
               ),
-              child: wrapper.getOffers() != null ? ListView(
+              child: state.getOffers() != null ? ListView(
                 scrollDirection: Axis.horizontal,
                 children: <Widget>[
-                  for(var offer in wrapper.getOffers()) Padding(
+                  for(var offer in state.getOffers()) Padding(
                     padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8, bottom: 8),
-                    child: TaxiOffer(offer: offer, wrapper: wrapper),
+                    child: TaxiOffer(offer: offer, state: state),
                   ),
                 ],
-              ) : wrapper.getRequestingOffers() ? 
+              ) : state.getRequestingOffers() ? 
                 SizedBox(width: double.infinity, child: Center(child: CircularProgressIndicator()))
                 :
                 SizedBox(width: double.infinity, child: Center(child: Text('error'))),
@@ -439,8 +446,8 @@ class OfferSelection extends StatelessWidget {
                   ),
                 ),
                 color: Colors.blue,
-                onPressed: wrapper.getSelectedOffer() == null ? null : (){
-                  wrapper.setRequestingRide(true);
+                onPressed: state.getSelectedOffer() == null ? null : (){
+                  state.setRequestingRide(true);
                 },
               ),
             ),
@@ -453,26 +460,26 @@ class OfferSelection extends StatelessWidget {
 
 class TaxiOffer extends StatelessWidget {
   final Offer _offer;
-  final MapControllerWrapper _wrapper;
+  final MapControllerHookState _state;
 
   const TaxiOffer({
     Key key,
     Offer offer,
-    MapControllerWrapper wrapper,
-  }) : this._offer = offer, this._wrapper = wrapper, super(key: key);
+    MapControllerHookState state,
+  }) : this._offer = offer, this._state = state, super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        if(_offer.enabled) _wrapper.setSelectedOffer(_offer);
+        if(_offer.enabled) _state.setSelectedOffer(_offer);
       },
       child: Container(
         width: 90,
         padding: EdgeInsets.only(left: 8, right: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(width: _wrapper.getSelectedOffer()!=_offer ? 0 : 2),
+          border: Border.all(width: _state.getSelectedOffer()!=_offer ? 0 : 2),
         ),
         foregroundDecoration: _offer.enabled ? null : BoxDecoration(
           color: Colors.grey,
@@ -519,22 +526,22 @@ class TaxiOffer extends StatelessWidget {
 class MapArea extends StatelessWidget {
   const MapArea({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
 
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
-      mapController: wrapper.controller,
+      mapController: state.controller,
       options: MapOptions(
         center: center,
         minZoom: 10,
         maxZoom: 18,
         zoom: 15.0,
         onPositionChanged: (mp, r){
-          wrapper.centerChanged(mp.center);
+          state.centerChanged(mp.center);
         },
         swPanBoundary: LatLng(26.485096, 53.869411),
         nePanBoundary: LatLng(26.604128, 54.059012),
@@ -550,8 +557,8 @@ class MapArea extends StatelessWidget {
         ),
         CircleLayerOptions(
           circles: [
-            if(wrapper.currentLocation()!=null) CircleMarker(
-              point: LatLng(wrapper.currentLocation().latitude, wrapper.currentLocation().longitude),
+            if(state.currentLocation()!=null) CircleMarker(
+              point: LatLng(state.currentLocation().latitude, state.currentLocation().longitude),
               radius: 7,
               color: Colors.blue,
             ),
@@ -559,20 +566,20 @@ class MapArea extends StatelessWidget {
         ),
         MarkerLayerOptions(
           markers: [
-            if(wrapper.getPickup()!=null) Marker(
+            if(state.getPickup()!=null) Marker(
               width: 40.0,
               height: 40.0,
-              point: LatLng(wrapper.getPickup().lat, wrapper.getPickup().lng),
+              point: LatLng(state.getPickup().lat, state.getPickup().lng),
               builder: (ctx) =>
               Container(
                 child: Image.asset('assets/map/pickup.png'),
               ),
               anchorPos: AnchorPos.align(AnchorAlign.top),
             ),
-            if(wrapper.getDestination()!=null) Marker(
+            if(state.getDestination()!=null) Marker(
               width: 40.0,
               height: 40.0,
-              point: LatLng(wrapper.getDestination().lat, wrapper.getDestination().lng),
+              point: LatLng(state.getDestination().lat, state.getDestination().lng),
               builder: (ctx) =>
               Container(
                 child: Image.asset('assets/map/destination.png'),
@@ -581,13 +588,10 @@ class MapArea extends StatelessWidget {
             ),
           ],
         ),
-        PolylineLayerOptions(
+        if(state.route!=null) PolylineLayerOptions(
           polylines: [
-            if(wrapper.getPickup()!=null && wrapper.getDestination()!=null) Polyline(
-              points: [
-                LatLng(wrapper.getPickup().lat, wrapper.getPickup().lng),
-                LatLng(wrapper.getDestination().lat, wrapper.getDestination().lng),
-              ],
+            Polyline(
+              points: state.route.points,
               strokeWidth: 4,
               color: Colors.purple,
             ),
@@ -601,10 +605,10 @@ class MapArea extends StatelessWidget {
 class DestinationAlert extends StatelessWidget {
   const DestinationAlert({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
 
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
@@ -639,10 +643,10 @@ class DestinationAlert extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.only(end: 10),
                 child: GestureDetector(
                   onTap: () async{
-                    final selected = await showSearch(context: context, delegate: AddressSearch(translate('taxi_query.destination.label')));
+                    final selected = await showSearch(context: context, delegate: AddressSearch(translate('taxi_query.destination.label'), lat: this.state.controller.center.latitude, lng: this.state.controller.center.longitude));
                     if(selected != null){
-                      // wrapper.setLocation(selected);
-                      wrapper.controller.move(LatLng(selected.lat, selected.lng), 14);
+                      // state.setLocation(selected);
+                      state.controller.move(LatLng(selected.lat, selected.lng), 17);
                     }
                   },
                   child: Text(
@@ -665,10 +669,10 @@ class DestinationAlert extends StatelessWidget {
 class PickupAlert extends StatelessWidget {
   const PickupAlert({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
 
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
@@ -703,10 +707,10 @@ class PickupAlert extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.only(end: 10),
                 child: GestureDetector(
                   onTap: () async{
-                    final selected = await showSearch(context: context, delegate: AddressSearch(translate('taxi_query.pickup.label')));
+                    final selected = await showSearch(context: context, delegate: AddressSearch(translate('taxi_query.pickup.label'), lat: this.state.controller.center.latitude, lng: this.state.controller.center.longitude));
                     if(selected != null){
-                      // wrapper.setLocation(selected);
-                      wrapper.controller.move(LatLng(selected.lat, selected.lng), 14);
+                      // state.setLocation(selected);
+                      state.controller.move(LatLng(selected.lat, selected.lng), 17);
                     }
                   },
                   child: Text(
@@ -729,10 +733,10 @@ class PickupAlert extends StatelessWidget {
 class AddressPanel extends StatelessWidget {
   const AddressPanel({
     Key key,
-    @required this.wrapper,
+    @required this.state,
   }) : super(key: key);
 
-  final MapControllerWrapper wrapper;
+  final MapControllerHookState state;
 
   @override
   Widget build(BuildContext context) {
@@ -754,7 +758,7 @@ class AddressPanel extends StatelessWidget {
         ),
         child: Column(
           children: <Widget>[
-            if(wrapper.getPickup()==null) Row(
+            if(state.getPickup()==null) Row(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(14.0),
@@ -767,8 +771,8 @@ class AddressPanel extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
-                    child: wrapper.getRequestingLocation() ? Center(child: CircularProgressIndicator()) : Text(
-                      "${wrapper.getLocation()?.name ?? ''}",
+                    child: state.getRequestingLocation() ? Center(child: SizedBox(height: 21, width: 22, child: CircularProgressIndicator())) : Text(
+                      "${state.getLocation()?.name ?? ''}",
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
@@ -778,7 +782,7 @@ class AddressPanel extends StatelessWidget {
                 ),
               ],
             ),
-            if(wrapper.getPickup()!=null) Row(
+            if(state.getPickup()!=null) Row(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(14.0),
@@ -792,7 +796,7 @@ class AddressPanel extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
                     child: Text(
-                      "${wrapper.getPickup()?.name ?? ''}",
+                      "${state.getPickup()?.name ?? ''}",
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
@@ -800,17 +804,17 @@ class AddressPanel extends StatelessWidget {
                     ),
                   ),
                 ),
-                if(wrapper.getPickup()!=null && wrapper.getRide()==null && !wrapper.getRequestingRide()) RawMaterialButton(
+                if(state.getPickup()!=null && state.getRide()==null && !state.getRequestingRide()) RawMaterialButton(
                   constraints: BoxConstraints(),
                   padding: EdgeInsets.all(0),
                   onPressed: (){
-                    wrapper.setPickup(null);
+                    state.setPickup(null);
                   },
                   child: Icon(Icons.clear, size: 20),
                 ),
               ],
             ),
-            if(wrapper.getPickup()!=null && wrapper.getDestination()==null) Row(
+            if(state.getPickup()!=null && state.getDestination()==null) Row(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(14.0),
@@ -823,8 +827,8 @@ class AddressPanel extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
-                    child: wrapper.getRequestingLocation() ? Center(child: CircularProgressIndicator()) : Text(
-                      "${wrapper.getLocation()?.name ?? ''}",
+                    child: state.getRequestingLocation() ? Center(child: CircularProgressIndicator()) : Text(
+                      "${state.getLocation()?.name ?? ''}",
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
@@ -834,7 +838,7 @@ class AddressPanel extends StatelessWidget {
                 ),
               ],
             ),
-            if(wrapper.getDestination()!=null) Row(
+            if(state.getDestination()!=null) Row(
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(14.0),
@@ -848,7 +852,7 @@ class AddressPanel extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
                     child: Text(
-                      "${wrapper.getDestination().name}",
+                      "${state.getDestination().name}",
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 14,
@@ -856,11 +860,11 @@ class AddressPanel extends StatelessWidget {
                     ),
                   ),
                 ),
-                if(wrapper.getDestination()!=null && wrapper.getRide()==null && !wrapper.getRequestingRide()) RawMaterialButton(
+                if(state.getDestination()!=null && state.getRide()==null && !state.getRequestingRide()) RawMaterialButton(
                   constraints: BoxConstraints(),
                   padding: EdgeInsets.all(0),
                   onPressed: (){
-                    wrapper.setDestination(null);
+                    state.setDestination(null);
                   },
                   child: Icon(Icons.clear, size: 20),
                 ),

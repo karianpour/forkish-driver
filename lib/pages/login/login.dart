@@ -47,13 +47,16 @@ Widget login(BuildContext context, {ValueNotifier<bool> page}) {
               textAlign: TextAlign.center,
             ),
             SizedBox.fromSize(size: Size.fromHeight(100)),
-            TextFormField(
+            Directionality(
               textDirection: TextDirection.ltr,
-              decoration: InputDecoration(
-                labelText: translate('login.mobile'),
-                prefixIcon: Icon(Icons.call),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: translate('login.mobile'),
+                  prefixIcon: Icon(Icons.call),
+                  hintText: "+989121111111",
+                ),
+                keyboardType: TextInputType.phone,
               ),
-              keyboardType: TextInputType.phone,
             ),
             SizedBox.fromSize(size: Size.fromHeight(20)),
             RaisedButton(

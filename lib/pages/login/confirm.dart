@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 part 'confirm.g.dart';
 
@@ -45,12 +46,41 @@ Widget confirm(BuildContext context, {ValueNotifier<bool> page}) {
             SizedBox.fromSize(size: Size.fromHeight(8)),
             Counter(),
             SizedBox.fromSize(size: Size.fromHeight(24)),
-            TextFormField(
+            // TextFormField(
+            //   textDirection: TextDirection.ltr,
+            //   decoration: InputDecoration(
+            //     prefixIcon: Icon(Icons.lock),
+            //     hintText: "1234",
+            //   ),
+            //   keyboardType: TextInputType.number,
+            // ),
+            Directionality(
               textDirection: TextDirection.ltr,
-              decoration: InputDecoration(
-                prefixIcon: Icon(Icons.lock),
+              child: Container(
+                padding: EdgeInsets.only(left: 30, right: 30),
+                // width: 120,
+                // constraints: BoxConstraints(
+                //   maxWidth: 100,
+                // ),
+                child: PinCodeTextField(
+                  length: 4,
+                  autoFocus: true,
+                  backgroundColor: Colors.white12,
+                  textInputType: TextInputType.number,
+                  obsecureText: false,
+                  animationType: AnimationType.fade,
+                  shape: PinCodeFieldShape.underline,
+                  animationDuration: Duration(milliseconds: 50),
+                  // borderRadius: BorderRadius.circular(5),
+                  fieldHeight: 40,
+                  fieldWidth: 30,
+                  onChanged: (value) {
+                  //   setState(() {
+                  //     currentText = value;
+                    // });
+                  },
+                ),
               ),
-              keyboardType: TextInputType.number,
             ),
             SizedBox.fromSize(size: Size.fromHeight(16)),
             Text(

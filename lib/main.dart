@@ -24,7 +24,6 @@ void defineRoutes(Router router) {
 
 void main() async {
   defineRoutes(App.router);
-  // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
   var delegate = await LocalizationDelegate.create(
@@ -38,6 +37,7 @@ void main() async {
 
 @widget
 Widget myApp(BuildContext context) {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final localizationDelegate = LocalizedApp.of(context).delegate;
   
   return LocalizationProvider(

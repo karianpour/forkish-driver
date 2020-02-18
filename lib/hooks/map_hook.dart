@@ -1,106 +1,24 @@
-import 'dart:math';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:for_kish/api/map.dart';
 import 'package:for_kish/helpers/types.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:rxdart/rxdart.dart';
 
-// final LatLng center = const LatLng(26.542065, 53.987069); // center of kish island
-
-class MapControllerWrapper {
-  MapController controller;
-
-  Position Function() currentLocation;
-
-  void Function(bool c) setRequestingLocation;
-  bool Function() getRequestingLocation;
-  void Function(Location location) setLocation;
-  Location Function() getLocation;
-  void Function(LatLng center) centerChanged;
-
-  void Function(Location location) setPickup;
-  Location Function() getPickup;
-  void Function(Location location) setDestination;
-  Location Function() getDestination;
-  void Function(bool c) setRequestingOffers;
-  bool Function() getRequestingOffers;
-  void Function(List<Offer> c) setOffers;
-  List<Offer> Function() getOffers;
-  void Function(Offer c) setSelectedOffer;
-  Offer Function() getSelectedOffer;
-  void Function(bool c) setRequestingRide;
-  bool Function() getRequestingRide;
-  void Function(Ride c) setRide;
-  Ride Function() getRide;
-  void Function(RideApproach c) setRideApproach;
-  RideApproach Function() getRideApproach;
-  void Function(RideProgress c) setRideProgress;
-  RideProgress Function() getRideProgress;
-  void Function() cancelRide;
-
-  MapControllerWrapper({
-    this.controller,
-    this.currentLocation,
-    this.setRequestingLocation, this.getRequestingLocation,
-    this.setLocation, this.getLocation,
-    this.centerChanged,
-    this.setPickup, this.getPickup,
-    this.setDestination, this.getDestination,
-    this.setRequestingOffers, this.getRequestingOffers,
-    this.setOffers, this.getOffers,
-    this.setSelectedOffer, this.getSelectedOffer,
-    this.setRequestingRide, this.getRequestingRide,
-    this.setRide, this.getRide,
-    this.setRideApproach, this.getRideApproach,
-    this.setRideProgress, this.getRideProgress,
-    this.cancelRide,
-  });
-
-  void moveToMyLocation() async {
-    try{
-      // final latlon = await _controller.requestMyLocationLatLng();
-      // await Future.delayed(Duration(seconds: 5));
-      final location = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      print(location.toJson());
-
-      final latlon = LatLng(location.latitude, location.longitude);
-      controller.move(latlon, controller.zoom);
-    }catch(err){
-      print(err);
-    }
-  }
-
-  void dispose(){
-    controller = null;
-  }
-
-  void confirmed() {
-    if(getPickup()==null){
-      setPickup(getLocation());
-    }else if(getDestination()==null){
-      setDestination(getLocation());
-    }
-  }
-}
-    
-MapControllerWrapper useMapControllerHook() {
+MapControllerHookState useMapControllerHook() {
   return Hook.use(_MapControllerHook());
 }
 
-class _MapControllerHook extends Hook<MapControllerWrapper> {
-  // final MapirMapController controller;
-
-  // const _MapControllerHook({
-    // @required this.controller
-  _MapControllerHookState createState() => _MapControllerHookState();
+class _MapControllerHook extends Hook<MapControllerHookState> {
+  MapControllerHookState createState() => MapControllerHookState();
 }
 
-class _MapControllerHookState extends HookState<MapControllerWrapper, _MapControllerHook> {
-  MapControllerWrapper _wrapper;
+class MapControllerHookState extends HookState<MapControllerHookState, _MapControllerHook> {
+  final _d = Distance();
 
   MapController _controller;
   bool firstTry = true;
@@ -113,6 +31,7 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
 
   Location _pickup;
   Location _destination;
+  MapRoute _route;
   bool _requestingOffers;
   List<Offer> _offers;
   Offer _selectedOffer;
@@ -137,11 +56,11 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
           _controller.move(LatLng(position.latitude, position.longitude), _controller.zoom);
           firstTry = false;
         }
-        print(position == null ? 'Unknown' : position.latitude.toString() + ', ' + position.longitude.toString());
+        // print(position == null ? 'Unknown' : position.latitude.toString() + ', ' + position.longitude.toString());
       }
     );
 
-    _locationOnChange.debounceTime(Duration(milliseconds: 500)).listen((center) {
+    _locationOnChange.debounceTime(Duration(milliseconds: 250)).listen((center) {
       // print(center.toString());
       queryForNewLocation(center);
     });
@@ -155,38 +74,9 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
     _requestingOffers = false;
     _requestingRide = false;
     _requestCancelled = false;
-    _wrapper = MapControllerWrapper(
-      controller: _controller,
-
-      currentLocation: currentLocation,
-
-      setRequestingLocation: setRequestingLocation,
-      getRequestingLocation: getRequestingLocation,
-      setLocation: setLocation,
-      getLocation: getLocation,
-      centerChanged: centerChanged,
-
-      setPickup: setPickup,
-      getPickup: getPickup,
-      setDestination: setDestination,
-      getDestination: getDestination,
-      setRequestingOffers: setRequestingOffers,
-      getRequestingOffers: getRequestingOffers,
-      setOffers: setOffers,
-      getOffers: getOffers,
-      setSelectedOffer: setSelectedOffer,
-      getSelectedOffer: getSelectedOffer,
-      setRequestingRide: setRequestingRide,
-      getRequestingRide: getRequestingRide,
-      setRide: setRide,
-      getRide: getRide,
-      setRideApproach: setRideApproach,
-      getRideApproach: getRideApproach,
-      setRideProgress: setRideProgress,
-      getRideProgress: getRideProgress,
-      cancelRide: cancelRide,
-    );
   }
+
+  MapController get controller => _controller;
 
   Position currentLocation() => _currentLocation;
 
@@ -233,6 +123,24 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
   Location getDestination(){
     return this._destination;
   }
+
+  void confirmed() {
+    if(getPickup()==null){
+      setPickup(getLocation());
+      if(getDestination()==null){
+        LatLng newLocation = _d.offset(LatLng(getLocation().lat, getLocation().lng), 100, 270);
+        _controller.move(newLocation, _controller.zoom);
+      }
+    }else if(getDestination()==null){
+      setDestination(getLocation());
+      if(getPickup()==null){
+        LatLng newLocation = _d.offset(LatLng(getLocation().lat, getLocation().lng), 100, 270);
+        _controller.move(newLocation, _controller.zoom);
+      }
+    }
+  }
+
+  MapRoute get route => _route;
 
   void setRequestingOffers(bool c){
     setState((){
@@ -309,13 +217,13 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
 
 
   @override
-  MapControllerWrapper build(BuildContext context) {
-    return _wrapper;
+  MapControllerHookState build(BuildContext context) {
+    return this;
   }
 
   @override
   void dispose() {
-    _wrapper.dispose();
+    // _wrapper.dispose();
     _positionStream.cancel();
     super.dispose();
   }
@@ -330,7 +238,7 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
         this._requestingLocation = true;
         this._location = null;
       });
-      final location = await queryLocation(center.latitude, center.longitude);
+      final location = await fetchLocation(center.latitude, center.longitude);
       setState((){
         this._requestingLocation = false;
         this._location = location;
@@ -345,8 +253,17 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
   }
 
   void requestOffers() async {
-    if(_destination==null || _pickup==null)
+    if(_destination==null || _pickup==null){
+      setState((){
+        this._route = null;
+        this._requestingOffers = false;
+        this._offers = null;
+        this._selectedOffer = null;
+      });
       return;
+    }
+
+    queryRoute();
 
     _controller.fitBounds(LatLngBounds(
       LatLng(_pickup.lat, _pickup.lng),
@@ -372,6 +289,19 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
         this._requestingOffers = false;
         this._offers = null;
         this._selectedOffer = null;
+      });
+    }
+  }
+
+  void queryRoute() async {
+    try{
+      final route = await fetchRoute(this._pickup, this._destination);
+      setState((){
+        this._route = route;
+      });
+    }catch(err){
+      setState((){
+        this._route = null;
       });
     }
   }
@@ -418,39 +348,4 @@ class _MapControllerHookState extends HookState<MapControllerWrapper, _MapContro
     });
   }
 
-}
-
-var i = 0;
-
-Future<Location> queryLocation(double lat, double lng) async {
-  await Future.delayed(Duration(milliseconds: 500));
-  i++;
-  return Location(lat: lat, lng: lng, name: 'اینجا ${round(lat, decimals: 2).toString()}, ${round(lng, decimals: 2).toString()}', location: 'اونجا $i');
-}
-
-// });
-
-
-Future<List<Offer>> fetchOffers(Location pickup, Location destination) async{
-  await Future.delayed(Duration(milliseconds: 2000));
-  // throw("error test");
-  return <Offer> [
-    Offer(vehicleType: VehicleType.sedan, price: 25000, enabled: true),
-    Offer(vehicleType: VehicleType.hatchback, price: 15000, enabled: false),
-    Offer(vehicleType: VehicleType.van, price: 55000, enabled: false),
-  ];
-}
-
-Future<RideAndApproach> fetchRide(Location pickup, Location destination, Offer selectedOffer) async{
-  await Future.delayed(Duration(seconds: 10));
-  // throw("error test");
-  return RideAndApproach(
-    ride: Ride(
-      driver: Driver(name: "اصغر طرقه", phone: "+989121161998", photoUrl: "", score: 4),
-      vehicle: Vehicle(vehicleType: VehicleType.sedan, classNumber: "22", mainNumber: "12345"),
-      paymentType: PaymentType.cash,
-      price: 25000,
-    ),
-    rideApproach: RideApproach(distance: 5700, eta: 560, location: Location(lat: 26.564119755213248, lng: 53.98794763507246), bearing: 55, rideReady: false),
-  );
 }

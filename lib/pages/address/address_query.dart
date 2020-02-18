@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:for_kish/api/map.dart';
 import 'package:for_kish/helpers/types.dart';
 
 class AddressSearch extends SearchDelegate<Location> {
+  double lat;
+  double lng;
 
-  AddressSearch(String label): super(searchFieldLabel: label);
+  AddressSearch(String label, {@required this.lat, @required this.lng}): super(searchFieldLabel: label);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -35,7 +38,7 @@ class AddressSearch extends SearchDelegate<Location> {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final result = searchAddress(query);
+    final result = fetchAddress(query, lat, lng);
     return Column(
       children: <Widget>[
         FutureBuilder(
@@ -82,15 +85,4 @@ class AddressSearch extends SearchDelegate<Location> {
       ],
     );
   }
-}
-
-Future<LocationList> searchAddress(String query) async{
-  await Future.delayed(Duration(milliseconds: 500));
-  // throw("error test");
-  return LocationList(
-    locations: [
-      Location(name: 'صدف', location: 'کیش', lat: 26.542772582989233, lng: 53.99377681419415),
-      Location(name: 'میدان دامون', location: 'کیش', lat: 26.564119755213273, lng: 53.98794763507246),
-    ]
-  );
 }
