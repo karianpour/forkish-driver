@@ -7,7 +7,7 @@
     "title": "فورکیش"
   },
   "menu": {
-    "login": "ورود",
+    "logout": "خروج",
     "taxi_query": "جستجوی تاکسی"
   },
   "login": {

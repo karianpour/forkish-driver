@@ -7,7 +7,7 @@
     "title": "4Kish"
   },
   "menu": {
-    "login": "Login",
+    "logout": "Logout",
     "taxi_query": "Taxi Query"
   },
   "login": {

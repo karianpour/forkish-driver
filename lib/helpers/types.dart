@@ -35,12 +35,33 @@ class Vehicle {
 }
 
 class Driver {
-  String name;
-  String phone;
+  String firstName;
+  String lastName;
+  String firstNameEn;
+  String lastNameEn;
+  String mobile;
   String photoUrl;
-  int score;
 
-  Driver({this.name, this.phone, this.photoUrl, this.score});
+  Driver({this.firstName, this.lastName, this.firstNameEn, this.lastNameEn, this.mobile, this.photoUrl});
+
+  Driver.fromJson(Map<String, dynamic> json)
+      : firstName = json['firstName'],
+        lastName = json['lastName'],
+        firstNameEn = json['firstNameEn'],
+        lastNameEn = json['lastNameEn'],
+        mobile = json['mobile'],
+        photoUrl = json['photoUrl'];
+
+  Map<String, dynamic> toJson() =>
+    {
+      'firstName': firstName,
+      'lastName': lastName,
+      'firstNameEn': firstNameEn,
+      'lastNameEn': lastNameEn,
+      'mobile': mobile,
+      'photoUrl': photoUrl,
+    };
+
 }
 
 enum PaymentType {
