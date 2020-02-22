@@ -19,6 +19,7 @@ Widget confirm(BuildContext context) {
   final auth = Provider.of<Auth>(context);
   final formKey = useMemoized(()=>GlobalKey<FormState>());
   final data = useMemoized(() => CodeData());
+  final error = useState("");
 
   return Container(
     padding: const EdgeInsets.only(left: 20, right: 20),
@@ -84,12 +85,21 @@ Widget confirm(BuildContext context) {
                   fieldHeight: 40,
                   fieldWidth: 30,
                   onChanged: (value) {
-                    data.code = value;
+                    data.code = value?.trim() ?? "";
                   },
                 ),
               ),
             ),
             SizedBox(height: 16),
+            if(error.value.length != 0)
+              Text(
+                error.value,
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
+            if(error.value.length != 0)
+              SizedBox(height: 16),
             Text(
               translate('login.mobile_alert', args: {"mobile": auth.mobile}),
               textAlign: TextAlign.center,
@@ -114,8 +124,15 @@ Widget confirm(BuildContext context) {
             ),
             SizedBox(height: 0),
             RaisedButton(
-              onPressed: (){
-                auth.verify(data.code);
+              onPressed: () async{
+                if(data.code.length!=4){
+                  error.value = translate('login.code_should_be_4');
+                }else{
+                  final result = await auth.verify(data.code);
+                  if(!result){
+                    error.value = translate('login.failed_to_verify');
+                  }
+                }
               },
               child: Text(translate('login.confirm')),
               color: Colors.blue,

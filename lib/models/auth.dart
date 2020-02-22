@@ -38,26 +38,23 @@ class Auth with ChangeNotifier {
     save();
   }
 
-  void verify(String code) async{
+  Future<bool> verify(String code) async{
     try{
       Driver driver = await verifyCode(this.mobile, code);
       if(driver != null){
         this.driver = driver;
         this.waitingForCode = true;
         this.loggedin = true;
+        notifyListeners();
+        save();
+        return true;
       }else{
-        this.waitingForCode = false;
-        this.loggedin = false;
-        this.driver = null;
+        return false;
       }
     }catch(err){
       print(err);
-      this.waitingForCode = false;
-      this.loggedin = false;
-      this.driver = null;
+      return false;
     }
-    notifyListeners();
-    save();
   }
 
   Future<void> load() async {

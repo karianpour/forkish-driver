@@ -7,6 +7,9 @@ import 'package:provider/provider.dart';
 
 part 'login.g.dart';
 
+// RegExp mobilePattern = RegExp(r'^(?:[+0]9)?[0-9]{10}$');
+RegExp mobilePattern = RegExp(r'^09[0-9]{9}$');
+
 class LoginData {
   String mobile = "";
 }
@@ -50,18 +53,26 @@ Widget login(BuildContext context) {
                 decoration: InputDecoration(
                   labelText: translate('login.mobile'),
                   prefixIcon: Icon(Icons.call),
-                  hintText: "+989121234567",
+                  // hintText: "+989121234567",
+                  hintText: "09121234567",
                 ),
                 keyboardType: TextInputType.phone,
                 onChanged: (value){
                   data.mobile = value;
+                },
+                validator: (value){
+                  if(value=='') return translate('login.mobile_is_needed');
+                  if(!mobilePattern.hasMatch(value)) return translate('login.mobile_does_not_match');
+                  return null;
                 },
               ),
             ),
             SizedBox(height: 20),
             RaisedButton(
               onPressed: (){
-                auth.login(data.mobile);
+                if(formKey.currentState.validate()){
+                  auth.login(data.mobile);
+                }
               },
               child: Text(translate('login.login')),
               color: Colors.blue,

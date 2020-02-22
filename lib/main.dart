@@ -126,7 +126,6 @@ final Map<String, WidgetBuilder> forKishRoutes = {
 
 @widget
 Widget appDrawer(BuildContext context) {
-
   final auth = Provider.of<Auth>(context);
 
   return Drawer(
@@ -158,6 +157,7 @@ Widget appDrawer(BuildContext context) {
           title: Text(translate('menu.logout')),
           onTap: () {
             Navigator.of(context).pop();
+            Navigator.pushNamed(context, '/');
             auth.relogin();
           },
         ),
