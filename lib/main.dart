@@ -2,9 +2,11 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:for_kish_driver/helpers/number.dart';
 import 'package:for_kish_driver/pages/login/confirm.dart';
 import 'package:for_kish_driver/models/auth.dart';
 import 'package:for_kish_driver/pages/login/login.dart';
+import 'package:for_kish_driver/pages/profile/profile.dart';
 import 'package:for_kish_driver/pages/taxi_query/test.dart';
 import 'package:for_kish_driver/translate_preferences.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
@@ -120,8 +122,7 @@ Widget taxiScaffold(BuildContext context, { @required Widget body }) {
 }
 
 final Map<String, WidgetBuilder> forKishRoutes = {
-  '/taxi_query': (context) => TaxiScaffold(body: TaxiQuery()),
-  '/test': (context) => TaxiScaffold(body: Test()),
+  '/profile': (context) => Profile(),
 };
 
 @widget
@@ -134,23 +135,24 @@ Widget appDrawer(BuildContext context) {
       padding: EdgeInsets.zero,
       children: <Widget>[
         DrawerHeader(
-          child: Text('Drawer Header'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('${auth.driver?.firstName ?? ''} ${auth.driver?.lastName ?? ''}'),
+              SizedBox(height: 10),
+              Text('${mapNumber(context, auth.driver?.mobile ?? '')}'),
+            ],
+          ),
           decoration: BoxDecoration(
             color: Colors.blue,
           ),
         ),
         ListTile(
-          title: Text('Empty'),
+          title: Text(translate('menu.profile')),
           onTap: () {
             Navigator.of(context).pop();
-            Navigator.pushNamed(context, '/');
-          },
-        ),
-        ListTile(
-          title: Text(translate('menu.taxi_query')),
-          onTap: () {
-            Navigator.of(context).pop();
-            Navigator.pushNamed(context, '/taxi_query');
+            Navigator.pushNamed(context, '/profile');
           },
         ),
         ListTile(
@@ -159,13 +161,6 @@ Widget appDrawer(BuildContext context) {
             Navigator.of(context).pop();
             Navigator.pushNamed(context, '/');
             auth.relogin();
-          },
-        ),
-        ListTile(
-          title: Text(translate('test')),
-          onTap: () {
-            Navigator.of(context).pop();
-            Navigator.pushNamed(context, '/test');
           },
         ),
         ListTile(

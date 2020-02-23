@@ -4,11 +4,11 @@
     "english": "English"
   },
   "app": {
-    "title": "فورکیش"
+    "title": "فورکیش راننده"
   },
   "menu": {
     "logout": "خروج",
-    "taxi_query": "جستجوی تاکسی"
+    "profile": "پروفایل"
   },
   "login": {
     "welcome": "خوش آمدید",
@@ -26,27 +26,15 @@
     "code_should_be_4": "کد باید ۴ رقم باشد",
     "failed_to_verify": "تایید کد شکست خورد"
   },
-  "taxi_query": {
-    "pickup": {
-      "label": "مبدا",
-      "question": "لطفا آدرس مبدا را انتخاب نمایید."
-    },
-    "destination": {
-      "label": "مقصد",
-      "question": "لطفا آدرس مقصد را انتخاب نمایید."
-    },
-    "price": "\u200e{price} T",
-    "request": "درخواست تاکسی",
-    "cancel_request": "برای لغو سفر نگهدارید",
-    "cancel_ride": "برای لغو سفر نگهدارید",
-    "callDriver": "تماس با راننده",
-    "options": "گزینه‌ها",
-    "distance": "فاصله",
-    "eta": "زمان رسیدن",
-    "figure": "مبلغ",
-    "distanceKilometer": "{distance} کیلومتر",
-    "etaMinute": "{eta} دقیقه",
-    "paymentMethod": "روش پرداخت"
+  "signup": {
+    "firstName": "نام",
+    "lastName": "نام خانوادگی",
+    "firstNameEn": "نام لاتین",
+    "lastNameEn": "نام خانوادگی لاتین",
+    "mobile": "شماره تلفن همراه",
+    "save": "تایید",
+    "mandatory": "اجباری",
+    "failed": "ذخیره شکست خورد"
   },
   "VehicleType": {
     "sedan": "شخصی",

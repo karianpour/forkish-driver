@@ -9,10 +9,10 @@ Future<Driver> verifyCode(String mobile, String code) async {
   await Future.delayed(Duration(milliseconds: 200));
   if(code == '1234'){
     return Driver(
-      firstName: '',
-      lastName: '',
-      firstNameEn: '',
-      lastNameEn: '',
+      firstName: 'کیوان',
+      lastName: 'آرین‌پور',
+      firstNameEn: 'Kayvan',
+      lastNameEn: 'Arianpour',
       mobile: '09121161998',
       photoUrl: '',
     );
