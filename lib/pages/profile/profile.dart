@@ -33,21 +33,7 @@ Widget profile(BuildContext context) {
 
   return Scaffold(
     appBar: AppBar(
-      backgroundColor: Color(0x11000000),
-      textTheme: TextTheme(
-        title: TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-        ),
-      ),
-      iconTheme: IconThemeData(
-        color: Colors.black,
-      ),
-      elevation: 0,
       title: Text(translate('menu.profile')),
-      actionsIconTheme: IconThemeData(
-        color: Colors.black
-      ),
     ),
     body: Container(
       padding: const EdgeInsets.only(left: 20, right: 20),
@@ -157,8 +143,6 @@ Widget profile(BuildContext context) {
                   }
                 },
                 child: Text(translate('signup.save')),
-                color: Colors.blue,
-                textColor: Colors.white,
               ),
               SizedBox(height: 20),
             ],

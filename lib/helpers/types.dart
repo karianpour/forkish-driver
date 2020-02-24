@@ -1,3 +1,25 @@
+class Passenger {
+  String firstName;
+  String lastName;
+  String mobile;
+
+  Passenger({this.firstName, this.lastName, this.mobile});
+
+  Passenger.fromJson(Map<String, dynamic> json)
+      : 
+        firstName = json['firstName'],
+        lastName = json['lastName'],
+        mobile = json['mobile'];
+
+  Map<String, dynamic> toJson() =>
+    {
+      'firstName': firstName,
+      'lastName': lastName,
+      'mobile': mobile,
+    };
+
+}
+
 class LocationList {
   List<Location> locations;
 
@@ -10,20 +32,19 @@ class Location {
   String name;
   String location;
   Location({this.name, this.location, this.lat, this.lng});
+
+  Location.fromJson(Map<String, dynamic> json)
+      : 
+        lat = json['lat'],
+        lng = json['lng'],
+        name = json['name'],
+        location = json['location'];
 }
 
 enum VehicleType {
   sedan,
   van,
   hatchback,
-}
-
-class Offer {
-  VehicleType vehicleType;
-  double price;
-  bool enabled;
-
-  Offer({this.vehicleType, this.price, this.enabled});
 }
 
 class Vehicle {
@@ -35,6 +56,7 @@ class Vehicle {
 }
 
 class Driver {
+  String id;
   String firstName;
   String lastName;
   String firstNameEn;
@@ -42,10 +64,11 @@ class Driver {
   String mobile;
   String photoUrl;
 
-  Driver({this.firstName, this.lastName, this.firstNameEn, this.lastNameEn, this.mobile, this.photoUrl});
+  Driver({this.id, this.firstName, this.lastName, this.firstNameEn, this.lastNameEn, this.mobile, this.photoUrl});
 
   Driver.fromJson(Map<String, dynamic> json)
-      : firstName = json['firstName'],
+      : id = json['id'],
+        firstName = json['firstName'],
         lastName = json['lastName'],
         firstNameEn = json['firstNameEn'],
         lastNameEn = json['lastNameEn'],
@@ -54,6 +77,7 @@ class Driver {
 
   Map<String, dynamic> toJson() =>
     {
+      'id': id,
       'firstName': firstName,
       'lastName': lastName,
       'firstNameEn': firstNameEn,
@@ -64,28 +88,29 @@ class Driver {
 
 }
 
+class Ride {
+  String id;
+  Location pickup;
+  Location destination;
+  double distance;
+  double time;
+  double price;
+
+  Ride({this.pickup, this.destination, this.distance, this.time, this.price});
+
+  Ride.fromJson(Map<String, dynamic> json)
+      : 
+        id = json['id'],
+        pickup = json['pickup'] == null ? null : Location.fromJson(json['pickup']),
+        destination = json['destination'] == null ? null : Location.fromJson(json['destination']),
+        distance = json['distance'],
+        time = json['time'],
+        price = json['price'];
+}
+
 enum PaymentType {
   cash,
   credit,
-}
-
-class Ride {
-  Driver driver;
-  Vehicle vehicle;
-  double price;
-  PaymentType paymentType;
-
-  Ride({this.driver, this.vehicle, this.price, this.paymentType});
-}
-
-class RideApproach{
-  int distance;
-  int eta;
-  Location location;
-  int bearing;
-  bool rideReady;
-
-  RideApproach({this.distance, this.eta, this.location, this.bearing, this.rideReady});
 }
 
 class RideProgress{
@@ -96,9 +121,3 @@ class RideProgress{
   RideProgress({this.onboard, this.location, this.bearing});
 }
 
-class RideAndApproach {
-  Ride ride;
-  RideApproach rideApproach;
-
-  RideAndApproach({this.ride, this.rideApproach});
-}

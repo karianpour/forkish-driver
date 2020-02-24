@@ -36,6 +36,14 @@
     "mandatory": "اجباری",
     "failed": "ذخیره شکست خورد"
   },
+  "work": {
+    "activate": "روشن کن",
+    "inactivate": "خاموش کن",
+    "accept": "قبول میکنم",
+    "arrived": "رسیدم",
+    "pickedup": "مسافر سوار شد",
+    "accomplished": "رسیدم مقصد"
+  },
   "VehicleType": {
     "sedan": "شخصی",
     "hatchback": "هاچ‌بک",

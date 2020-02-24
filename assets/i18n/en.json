@@ -36,6 +36,14 @@
     "mandatory": "Mandatory",
     "failed": "Save failed"
   },
+  "work": {
+    "activate": "Turn on",
+    "inactivate": "Turn off",
+    "accept": "I accept",
+    "arrived": "I arrived",
+    "pickedup": "Passenger got in",
+    "accomplished": "I arrived at destination"
+  },
   "VehicleType": {
     "sedan": "Sedan",
     "hatchback": "Hatchback",

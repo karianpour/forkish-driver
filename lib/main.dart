@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:for_kish_driver/helpers/number.dart';
+import 'package:for_kish_driver/models/work.dart';
+import 'package:for_kish_driver/pages/home.dart';
 import 'package:for_kish_driver/pages/login/confirm.dart';
 import 'package:for_kish_driver/models/auth.dart';
 import 'package:for_kish_driver/pages/login/login.dart';
 import 'package:for_kish_driver/pages/profile/profile.dart';
-import 'package:for_kish_driver/pages/taxi_query/test.dart';
 import 'package:for_kish_driver/translate_preferences.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_translate/flutter_translate.dart';
 import 'package:provider/provider.dart';
-
-import 'pages/taxi_query/taxi_query.dart';
 
 part 'main.g.dart';
 
@@ -46,14 +45,35 @@ Widget myApp(BuildContext context) {
   
   return LocalizationProvider(
     state: LocalizationProvider.of(context).state,
-    child: ChangeNotifierProvider(
-      create: (_) => Auth(),
+    child: MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Work>(
+          create: (_) => Work(),
+          update: (_, auth, work) {
+            print('updated');
+            if(auth.driver?.id != null){
+              work.load(auth.driver.id);
+            }
+            return work;
+          },
+        ),
+      ],
       child: MaterialApp(
         // debugShowCheckedModeBanner: false,
         // theme: ThemeData.dark(),
         theme: ThemeData(
           fontFamily: 'Nika',
           // primarySwatch: Colors.blue,
+          appBarTheme: AppBarTheme(
+            color: Colors.deepPurple,
+          ),
+          buttonTheme: ButtonThemeData(
+            buttonColor: Colors.deepPurple,
+            textTheme: ButtonTextTheme.primary,
+          ),
         ),
         localizationsDelegates: [
           // ... app-specific localization delegate[s] here
@@ -78,7 +98,7 @@ Widget myApp(BuildContext context) {
                 return Scaffold(body: Confirm());
               }
             }else{
-              return TaxiScaffold(body: Container());
+              return TaxiScaffold(body: Home());
             }
           },
         ),
@@ -90,20 +110,9 @@ Widget myApp(BuildContext context) {
 @widget
 Widget taxiScaffold(BuildContext context, { @required Widget body }) {
   return Scaffold(
-    extendBodyBehindAppBar: true,
+    // extendBodyBehindAppBar: true,
     drawer: AppDrawer(),
     appBar: AppBar(
-      backgroundColor: Color(0x11000000),
-      textTheme: TextTheme(
-        title: TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-        ),
-      ),
-      iconTheme: IconThemeData(
-        color: Colors.black,
-      ),
-      elevation: 0,
       title: Text(translate('app.title')),
       actions: <Widget>[
         RawMaterialButton(
@@ -113,9 +122,6 @@ Widget taxiScaffold(BuildContext context, { @required Widget body }) {
           child: Icon(Icons.notifications, size: 20),
         ),
       ],
-      actionsIconTheme: IconThemeData(
-        color: Colors.black
-      ),
     ),
     body: body,
   );
@@ -139,13 +145,25 @@ Widget appDrawer(BuildContext context) {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('${auth.driver?.firstName ?? ''} ${auth.driver?.lastName ?? ''}'),
+              Text(
+                '${auth.driver?.firstName ?? ''} ${auth.driver?.lastName ?? ''}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
               SizedBox(height: 10),
-              Text('${mapNumber(context, auth.driver?.mobile ?? '')}'),
+              Text(
+                '${mapNumber(context, auth.driver?.mobile ?? '')}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
+              ),
             ],
           ),
           decoration: BoxDecoration(
-            color: Colors.blue,
+            color: Colors.deepPurple,
           ),
         ),
         ListTile(

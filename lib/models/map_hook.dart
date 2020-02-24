@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:for_kish_driver/helpers/types.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
@@ -65,5 +66,14 @@ class MapControllerHookState extends HookState<MapControllerHookState, _MapContr
 
   void centerChanged(LatLng center) {
     _locationOnChange.add(center);
+  }
+
+  void moveCamera(Ride ride) {
+    _controller.fitBounds(LatLngBounds(
+      LatLng(ride.pickup.lat, ride.pickup.lng),
+      LatLng(ride.destination.lat, ride.destination.lng),
+    ), options: FitBoundsOptions(
+      padding: const EdgeInsets.only(top: 350.0, bottom: 200, left: 30, right: 30),
+    ));
   }
 }
