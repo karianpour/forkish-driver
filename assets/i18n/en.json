@@ -39,6 +39,7 @@
   "work": {
     "activate": "Turn on",
     "inactivate": "Turn off",
+    "price": "{price} Tomans",
     "accept": "I accept",
     "arrived": "I arrived",
     "pickedup": "Passenger got in",

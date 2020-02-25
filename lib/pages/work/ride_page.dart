@@ -79,7 +79,13 @@ Widget rideProgressPanel(BuildContext context) {
             children: <Widget>[
               LocationBar(location: work.ride.pickup, pickup: true),
               LocationBar(location: work.ride.destination, pickup: false),
-              PriceBar(price: work.ride.price, rejectRide: work.accepted ? null : work.rejectRide),
+              PriceBar(
+                price: work.ride.price,
+                rejectRide:
+                  (!(work.accepted ?? false)) ? work.rejectRide :
+                  ((work.accepted ?? false) && !(work.accomplished ?? false)) ? work.cancelRide :
+                  null, 
+              ),
             ],
           ),
         ),
@@ -197,7 +203,7 @@ class PriceBar extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.only(top: 1.0, bottom: 1.0),
             child: Text(
-              "${formatNumber(context, price) ?? ''}",
+              translate('work.price', args: {'price': formatNumber(context, price) ?? ''}),
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: 24,

@@ -39,6 +39,7 @@
   "work": {
     "activate": "روشن کن",
     "inactivate": "خاموش کن",
+    "price": "\u200e{price} تومان",
     "accept": "قبول میکنم",
     "arrived": "رسیدم",
     "pickedup": "مسافر سوار شد",

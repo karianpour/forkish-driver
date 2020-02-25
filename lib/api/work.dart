@@ -67,6 +67,13 @@ Future<bool> fetchActivate(String driverId, Work work) async {
 
 Future<bool> fetchRejectRide(String rideId) async {
   await Future.delayed(Duration(milliseconds: 1000));
+  print('reject');
+  return true;
+}
+
+Future<bool> fetchCancelRide(String rideId) async {
+  await Future.delayed(Duration(milliseconds: 1000));
+  print('cancel');
   return true;
 }
 

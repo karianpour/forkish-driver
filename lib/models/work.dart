@@ -79,10 +79,21 @@ class Work with ChangeNotifier {
     if(this.ride==null || (this.accepted ?? false)) return;
     try{
       var rejectingRide = this.ride;
-      this.ride = null;
+      resetRide();
       notifyListeners();
       await fetchRejectRide(rejectingRide.id);
-      print('rejected');
+    }catch(err){
+      print(err);
+    }
+  }
+
+  void cancelRide() async{
+    if(this.ride==null || !(this.accepted ?? false) || (this.accomplished ?? false)) return;
+    try{
+      var cancellingRide = this.ride;
+      resetRide();
+      notifyListeners();
+      await fetchCancelRide(cancellingRide.id);
     }catch(err){
       print(err);
     }
@@ -138,17 +149,21 @@ class Work with ChangeNotifier {
     try{
       var result = await fetchAccomplished(ride.id);
       if(result != null){
-        this.ride = null;
-        this.accepted = null;
-        this.passenger = null;
-        this.arrived = null;
-        this.pickedup = null;
-        this.accomplished = null;
+        resetRide();
       }
       notifyListeners();
     }catch(err){
       print(err);
     }
+  }
+
+  void resetRide(){
+    this.ride = null;
+    this.accepted = null;
+    this.passenger = null;
+    this.arrived = null;
+    this.pickedup = null;
+    this.accomplished = null;
   }
 
   void setMapController(MapControllerHookState controller) {
