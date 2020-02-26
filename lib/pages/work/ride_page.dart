@@ -56,6 +56,7 @@ Widget inactivator(BuildContext context) {
     ),
   );
 }
+
 @widget
 Widget rideProgressPanel(BuildContext context) {
   final work = Provider.of<Work>(context);
@@ -89,6 +90,7 @@ Widget rideProgressPanel(BuildContext context) {
                   ((work.accepted ?? false) && !(work.accomplished ?? false)) ? work.cancelRide :
                   null, 
               ),
+              if((work.accepted ?? false) && !(work.pickedup ?? false)) PassengerPanel(),
             ],
           ),
         ),
@@ -99,6 +101,63 @@ Widget rideProgressPanel(BuildContext context) {
         if((work.accepted ?? false) && !(work.arrived ?? false)) Arriving(),
         if((work.arrived ?? false) && !(work.pickedup ?? false)) Pickup(),
         if((work.pickedup ?? false) && !(work.accomplished ?? false)) Accomplishment(),
+      ],
+    ),
+  );
+}
+
+@widget
+Widget passengerPanel(BuildContext context) {
+  final work = Provider.of<Work>(context);
+  final passenger = work.passenger;
+
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(height: 10,),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            CircleAvatar(
+              radius: 32,
+              backgroundImage: AssetImage('assets/sample/brad_pit.jpeg'),
+            ),
+            Padding(
+              padding: const EdgeInsetsDirectional.only(start: 8),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    '${passenger.firstName} ${passenger.lastName}',
+                    style: TextStyle(
+                      fontSize: 28,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        Container(
+          width: double.infinity,
+          alignment: AlignmentDirectional.centerEnd,
+          child: RaisedButton(
+            child: Icon(Icons.call),
+            onPressed: () async {
+              print('call ${passenger.mobile}');
+              if(await canLaunch("tel:${passenger.mobile}")){
+                var r = await launch("tel:${passenger.mobile}");
+                print("result : $r");
+              }else{
+                print('cant lunch');
+              }
+            },
+          ),
+        ),
       ],
     ),
   );
@@ -133,10 +192,10 @@ Widget navigateToDestination(BuildContext context, Location location) {
 void Function() navigateToLocation(Location location) => () async {
   final url = 
     Platform.isIOS ?
-      'https://maps.apple.com/?daddr=${location.lat},${location.lng}=':
+      'https://maps.apple.com/?daddr=${location.lat},${location.lng}':
     Platform.isAndroid?
-      'google.navigation:q=${location.lat},${location.lng}=d':
-      'https://maps.google.com/?daddr=${location.lat},${location.lng}='
+      'google.navigation:q=${location.lat},${location.lng}':
+      'https://maps.google.com/?daddr=${location.lat},${location.lng}'
   ;
 // waze url
 // String mapRequest = "https://waze.com/ul?q=" + latLng.latitude + "," + latLng.longitude + "&navigate=yes&zoom=17";
