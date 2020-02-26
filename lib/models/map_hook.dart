@@ -17,12 +17,11 @@ class _MapControllerHook extends Hook<MapControllerHookState> {
 }
 
 class MapControllerHookState extends HookState<MapControllerHookState, _MapControllerHook> {
-  final _d = Distance();
-
   MapController _controller;
   bool firstTry = true;
   Position _currentLocation;
   StreamSubscription<Position> _positionStream;
+  void Function(Position) _locationChangeListener;
 
   final _locationOnChange = new BehaviorSubject<LatLng>();
 
@@ -30,7 +29,7 @@ class MapControllerHookState extends HookState<MapControllerHookState, _MapContr
   void initHook() {
     super.initHook();
 
-    var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 50);
+    var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 20);
 
     _positionStream = Geolocator().getPositionStream(locationOptions).listen(
       (Position position) {
@@ -41,11 +40,16 @@ class MapControllerHookState extends HookState<MapControllerHookState, _MapContr
           _controller.move(LatLng(position.latitude, position.longitude), _controller.zoom);
           firstTry = false;
         }
+        if(this._locationChangeListener != null) _locationChangeListener(position); 
         // print(position == null ? 'Unknown' : position.latitude.toString() + ', ' + position.longitude.toString());
       }
     );
 
     _controller = MapController();
+  }
+
+  informMeAboutLocationChanged (void Function(Position) locationChangeListener){
+    this._locationChangeListener = locationChangeListener;
   }
 
   MapController get controller => _controller;

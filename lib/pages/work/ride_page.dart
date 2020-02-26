@@ -9,7 +9,8 @@ import 'package:for_kish_driver/models/work.dart';
 import 'package:latlong/latlong.dart';
 import 'package:functional_widget_annotation/functional_widget_annotation.dart';
 import 'package:provider/provider.dart';
-
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io' show Platform;
 
 part 'ride_page.g.dart';
 
@@ -28,6 +29,8 @@ Widget ridePage(BuildContext context) {
       MapArea(state: state),
       if(work.ride==null) Inactivator(),
       if(work.ride!=null) RideProgressPanel(),
+      if(work.ride!=null && (work.accepted ?? false) && !(work.arrived ?? false)) NavigateToPickup(work.ride.pickup),
+      if(work.ride!=null && (work.accepted ?? false) && (work.arrived ?? false)) NavigateToDestination(work.ride.destination),
     ],
   );
 }
@@ -100,6 +103,49 @@ Widget rideProgressPanel(BuildContext context) {
     ),
   );
 }
+
+@widget
+Widget navigateToPickup(BuildContext context, Location location) {
+  return Positioned(
+    bottom: 100,
+    left: 20,
+    right: 20,
+    child: RaisedButton(
+      child: Text(translate('work.go_pickup')),
+      onPressed: navigateToLocation(location),
+    ),
+  );
+}
+
+@widget
+Widget navigateToDestination(BuildContext context, Location location) {
+  return Positioned(
+    bottom: 100,
+    left: 20,
+    right: 20,
+    child: RaisedButton(
+      child: Text(translate('work.go_destination')),
+      onPressed: navigateToLocation(location),
+    ),
+  );
+}
+
+void Function() navigateToLocation(Location location) => () async {
+  final url = 
+    Platform.isIOS ?
+      'https://maps.apple.com/?daddr=${location.lat},${location.lng}=':
+    Platform.isAndroid?
+      'google.navigation:q=${location.lat},${location.lng}=d':
+      'https://maps.google.com/?daddr=${location.lat},${location.lng}='
+  ;
+// waze url
+// String mapRequest = "https://waze.com/ul?q=" + latLng.latitude + "," + latLng.longitude + "&navigate=yes&zoom=17";
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    print('Could not launch $url');
+  }
+};
 
 @widget
 Widget acceptance(BuildContext context) {

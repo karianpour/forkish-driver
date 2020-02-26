@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:for_kish_driver/api/work.dart';
 import 'package:for_kish_driver/helpers/types.dart';
 import 'package:for_kish_driver/models/map_hook.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Work with ChangeNotifier {
   bool loaded = false;
@@ -48,6 +49,10 @@ class Work with ChangeNotifier {
     }catch(err){
       print(err);
     }
+  }
+
+  Future<void> locationChanged(Position position) async{
+    print(position == null ? 'Unknown' : position.latitude.toString() + ', ' + position.longitude.toString());
   }
 
   Future<void> inactivate() async {
@@ -168,6 +173,7 @@ class Work with ChangeNotifier {
 
   void setMapController(MapControllerHookState controller) {
     this.controller = controller;
+    this.controller?.informMeAboutLocationChanged(locationChanged);
   }
 
 }

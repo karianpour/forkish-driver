@@ -43,7 +43,9 @@
     "accept": "قبول میکنم",
     "arrived": "رسیدم",
     "pickedup": "مسافر سوار شد",
-    "accomplished": "رسیدم مقصد"
+    "accomplished": "رسیدم مقصد",
+    "go_pickup": "برو مبدا",
+    "go_destination": "برو مقصد"
   },
   "VehicleType": {
     "sedan": "شخصی",
