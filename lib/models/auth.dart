@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:for_kish_driver/api/work.dart';
 import 'package:for_kish_driver/helpers/types.dart';
 import 'package:for_kish_driver/api/auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,6 +14,7 @@ class Auth with ChangeNotifier {
   bool waitingForCode = false;
   String mobile;
   Driver driver;
+  String token;
 
   Auth(){
     load();
@@ -40,9 +42,10 @@ class Auth with ChangeNotifier {
 
   Future<bool> verify(String code) async{
     try{
-      Driver driver = await verifyCode(this.mobile, code);
-      if(driver != null){
-        this.driver = driver;
+      VerificationResponse response = await verifyCode(this.mobile, code);
+      if(response != null){
+        this.driver = response.driver;
+        this.token = response.token;
         this.waitingForCode = true;
         this.loggedin = true;
         notifyListeners();
@@ -68,6 +71,7 @@ class Auth with ChangeNotifier {
         this.waitingForCode = map['waitingForCode'];
         this.mobile = map['mobile'];
         this.driver = map['driver']==null ? null : Driver.fromJson(map['driver']);
+        this.token = map['token'];
       }
     }catch(err){
       print(err);
@@ -75,8 +79,10 @@ class Auth with ChangeNotifier {
       this.waitingForCode = false;
       this.mobile = null;
       this.driver = null;
+      this.token = null;
     }
     this.loaded = true;
+    setWebSocketToken(this.token);
     notifyListeners();
   }
 
@@ -92,5 +98,6 @@ class Auth with ChangeNotifier {
       'waitingForCode': waitingForCode,
       'mobile': mobile,
       'driver': driver?.toJson(),
+      'token': token,
     };
 }

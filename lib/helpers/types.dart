@@ -1,20 +1,20 @@
 class Passenger {
-  String firstName;
-  String lastName;
+  String firstname;
+  String lastname;
   String mobile;
 
-  Passenger({this.firstName, this.lastName, this.mobile});
+  Passenger({this.firstname, this.lastname, this.mobile});
 
   Passenger.fromJson(Map<String, dynamic> json)
       : 
-        firstName = json['firstName'],
-        lastName = json['lastName'],
+        firstname = json['firstname'],
+        lastname = json['lastname'],
         mobile = json['mobile'];
 
   Map<String, dynamic> toJson() =>
     {
-      'firstName': firstName,
-      'lastName': lastName,
+      'firstname': firstname,
+      'lastname': lastname,
       'mobile': mobile,
     };
 
@@ -30,15 +30,15 @@ class Location {
   double lat;
   double lng;
   String name;
-  String location;
-  Location({this.name, this.location, this.lat, this.lng});
+  String address;
+  Location({this.name, this.address, this.lat, this.lng});
 
   Location.fromJson(Map<String, dynamic> json)
       : 
         lat = json['lat'],
         lng = json['lng'],
         name = json['name'],
-        location = json['location'];
+        address = json['address'];
 }
 
 enum VehicleType {
@@ -47,12 +47,40 @@ enum VehicleType {
   hatchback,
 }
 
-class Vehicle {
-  String mainNumber;
-  String classNumber;
-  VehicleType vehicleType;
+VehicleType findVehicleType(String name){
+  return VehicleType.values.firstWhere((vt)=> vt.toString()=='VehicleType.$name', orElse: (){
+    print('Vehicle Type for $name not found, returning null');
+    return null;
+  });
+}
 
-  Vehicle({this.mainNumber, this.classNumber, this.vehicleType});
+String getVehicleTypeName(VehicleType vt) {
+  return vt?.toString()?.replaceFirst('VehicleType.', '');
+}
+
+class Vehicle {
+  String id;
+  String plateNo;
+  VehicleType vehicleType;
+  int capacity;
+
+  Vehicle({this.plateNo, this.vehicleType, this.capacity});
+
+  Vehicle.fromJson(Map<String, dynamic> json)
+   :
+     id = json['id'],
+     plateNo = json['plateNo'],
+     vehicleType = findVehicleType(json['vehicleType']),
+     capacity = json['capacity']
+   ;
+
+  Map<String, dynamic> toJson() =>
+    {
+      'id': id,
+      'plateNo': plateNo,
+      'vehicleType': getVehicleTypeName(vehicleType),
+      'capacity': capacity
+    };
 }
 
 class Driver {
@@ -63,6 +91,7 @@ class Driver {
   String lastNameEn;
   String mobile;
   String photoUrl;
+  List<Vehicle> vehicles;
 
   Driver({this.id, this.firstName, this.lastName, this.firstNameEn, this.lastNameEn, this.mobile, this.photoUrl});
 
@@ -73,7 +102,9 @@ class Driver {
         firstNameEn = json['firstNameEn'],
         lastNameEn = json['lastNameEn'],
         mobile = json['mobile'],
-        photoUrl = json['photoUrl'];
+        photoUrl = json['photoUrl'],
+        vehicles = json['vehicles'] != null ? json['vehicles'].map<Vehicle>( (v) => Vehicle.fromJson(v) ).toList() : null
+        ;
 
   Map<String, dynamic> toJson() =>
     {
@@ -84,6 +115,7 @@ class Driver {
       'lastNameEn': lastNameEn,
       'mobile': mobile,
       'photoUrl': photoUrl,
+      'vehicles': vehicles
     };
 
 }
@@ -103,14 +135,25 @@ class Ride {
         id = json['id'],
         pickup = json['pickup'] == null ? null : Location.fromJson(json['pickup']),
         destination = json['destination'] == null ? null : Location.fromJson(json['destination']),
-        distance = json['distance'],
-        time = json['time'],
-        price = json['price'];
+        distance = double.parse(json['distance'].toString()),
+        time = double.parse(json['time'].toString()),
+        price = double.parse(json['price'].toString());
 }
 
 enum PaymentType {
   cash,
   credit,
+}
+
+findPaymentType(String name) {
+  return PaymentType.values.firstWhere( (pt) => pt.toString() == 'PaymentType.$name', orElse: (){
+    print('No payment type where found for $name, so I return null.');
+    return null;
+  });
+}
+
+String getPaymentTypeName(PaymentType vt) {
+  return vt?.toString()?.replaceFirst('PaymentType.', '');
 }
 
 class RideProgress{

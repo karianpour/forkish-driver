@@ -55,7 +55,7 @@ Widget myApp(BuildContext context) {
           update: (_, auth, work) {
             print('updated');
             if(auth.driver?.id != null){
-              work.load(auth.driver.id);
+              work.load(auth.driver);
             }
             return work;
           },

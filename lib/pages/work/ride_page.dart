@@ -120,10 +120,10 @@ Widget passengerPanel(BuildContext context) {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            CircleAvatar(
-              radius: 32,
-              backgroundImage: AssetImage('assets/sample/brad_pit.jpeg'),
-            ),
+            // CircleAvatar(
+            //   radius: 32,
+            //   backgroundImage: AssetImage('assets/sample/brad_pit.jpeg'),
+            // ),
             Padding(
               padding: const EdgeInsetsDirectional.only(start: 8),
               child: Column(
@@ -132,7 +132,7 @@ Widget passengerPanel(BuildContext context) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    '${passenger.firstName} ${passenger.lastName}',
+                    '${passenger.firstname} ${passenger.lastname}',
                     style: TextStyle(
                       fontSize: 28,
                     ),
@@ -144,18 +144,26 @@ Widget passengerPanel(BuildContext context) {
         ),
         Container(
           width: double.infinity,
+          padding: const EdgeInsetsDirectional.only(start: 8, end: 8),
           alignment: AlignmentDirectional.centerEnd,
-          child: RaisedButton(
-            child: Icon(Icons.call),
-            onPressed: () async {
-              print('call ${passenger.mobile}');
-              if(await canLaunch("tel:${passenger.mobile}")){
-                var r = await launch("tel:${passenger.mobile}");
-                print("result : $r");
-              }else{
-                print('cant lunch');
-              }
-            },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              if(work.confirmed) Text(translate('work.comming')),
+              SizedBox(width: 16),
+              RaisedButton(
+                child: Icon(Icons.call),
+                onPressed: () async {
+                  print('call ${passenger.mobile}');
+                  if(await canLaunch("tel:${passenger.mobile}")){
+                    var r = await launch("tel:${passenger.mobile}");
+                    print("result : $r");
+                  }else{
+                    print('cant lunch');
+                  }
+                },
+              ),
+            ],
           ),
         ),
       ],

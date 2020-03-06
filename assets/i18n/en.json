@@ -45,7 +45,8 @@
     "pickedup": "Passenger got in",
     "accomplished": "I arrived at destination",
     "go_pickup": "Go to pickup",
-    "go_destination": "Go yo destination"
+    "go_destination": "Go yo destination",
+    "comming": "I am comming"
   },
   "VehicleType": {
     "sedan": "Sedan",

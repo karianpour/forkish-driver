@@ -40,7 +40,7 @@ class MapControllerHookState extends HookState<MapControllerHookState, _MapContr
           _controller.move(LatLng(position.latitude, position.longitude), _controller.zoom);
           firstTry = false;
         }
-        if(this._locationChangeListener != null) _locationChangeListener(position); 
+        if(this._locationChangeListener != null) _locationChangeListener(position);
         // print(position == null ? 'Unknown' : position.latitude.toString() + ', ' + position.longitude.toString());
       }
     );
@@ -72,8 +72,11 @@ class MapControllerHookState extends HookState<MapControllerHookState, _MapContr
     _locationOnChange.add(center);
   }
 
-  void moveCamera(Ride ride) {
-    _controller.fitBounds(LatLngBounds(
+  void moveCamera(Ride ride) async {
+    if(!_controller.ready){
+      await _controller.onReady;
+    }
+    _controller?.fitBounds(LatLngBounds(
       LatLng(ride.pickup.lat, ride.pickup.lng),
       LatLng(ride.destination.lat, ride.destination.lng),
     ), options: FitBoundsOptions(

@@ -45,7 +45,8 @@
     "pickedup": "مسافر سوار شد",
     "accomplished": "رسیدم مقصد",
     "go_pickup": "برو مبدا",
-    "go_destination": "برو مقصد"
+    "go_destination": "برو مقصد",
+    "comming": "دارم میام"
   },
   "VehicleType": {
     "sedan": "شخصی",
