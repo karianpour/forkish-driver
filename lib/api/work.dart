@@ -248,8 +248,8 @@ Future<void> fetchActivate(String vehicleId, Position currentPosition, Work work
       'vehicleId': vehicleId,
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -267,8 +267,8 @@ Future<void> fetchRejectRide(String rideId, Position currentPosition) async {
       'rejectReason': 'misc', //TODO reject reason should be specified
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -285,8 +285,8 @@ Future<void> fetchCancelRide(String rideId, Position currentPosition) async {
       'rideProgressId': rideId,
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -307,8 +307,8 @@ Future<void> fetchAcceptRide(String rideId, Position currentPosition) async {
       'driverOfferId': rideId,
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -335,8 +335,8 @@ Future<void> fetchArrived(String rideId, Position currentPosition) async {
       'rideProgressId': rideId,
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -363,8 +363,8 @@ Future<void> fetchPickedup(String rideId, Position currentPosition) async {
       'rideProgressId': rideId,
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -386,8 +386,8 @@ Future<void> fetchAccomplished(String rideId, Position currentPosition) async {
       'rideProgressId': rideId,
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -408,8 +408,8 @@ Future<void> fetchInactivate(Position currentPosition) async {
     'payload': {
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
@@ -424,8 +424,8 @@ Future<void> fetchUpdatePosition(Position currentPosition) async {
     'payload': {
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
-      'heading': currentPosition.heading,
-      'speed': currentPosition.speed,
+      'heading': currentPosition.heading.round(),
+      'speed': currentPosition.speed.round(),
     },
   });
   _ws.add(msg);
