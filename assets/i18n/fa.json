@@ -27,10 +27,10 @@
     "failed_to_verify": "تایید کد شکست خورد"
   },
   "signup": {
-    "firstName": "نام",
-    "lastName": "نام خانوادگی",
-    "firstNameEn": "نام لاتین",
-    "lastNameEn": "نام خانوادگی لاتین",
+    "firstname": "نام",
+    "lastname": "نام خانوادگی",
+    "firstnameEn": "نام لاتین",
+    "lastnameEn": "نام خانوادگی لاتین",
     "mobile": "شماره تلفن همراه",
     "save": "تایید",
     "mandatory": "اجباری",

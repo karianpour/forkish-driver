@@ -6,7 +6,7 @@ import 'package:for_kish_driver/helpers/types.dart';
 import 'package:for_kish_driver/models/work.dart';
 import 'package:geolocator/geolocator.dart';
 
-var wsBaseUrl = 'ws://192.168.1.52:4080';
+import 'backend_address.dart';
 
 class DriverState {
   bool active = false;
@@ -102,7 +102,10 @@ Future<bool> connect() async {
             }
           }
         },
-        onDone: () => print('[+]Done :)'),
+        onDone: () {
+          _isAlive = false;
+          print('[+]Done :)');
+        },
         onError: (err) => print('[!]Error -- ${err.toString()}'),
         cancelOnError: true,
       );
@@ -247,6 +250,7 @@ Future<void> fetchRejectRide(String rideId, Position currentPosition) async {
     'method': 'reject',
     'payload': {
       'driverOfferId': rideId,
+      'rejectReason': 'misc', //TODO reject reason should be specified
       'lat': currentPosition.latitude,
       'lng': currentPosition.longitude,
       'heading': currentPosition.heading,
@@ -277,8 +281,8 @@ Future<void> fetchCancelRide(String rideId, Position currentPosition) async {
 Future<void> fetchAcceptRide(String rideId, Position currentPosition) async {
   // await Future.delayed(Duration(milliseconds: 1000));
   // return Passenger.fromJson({
-  //   'firstName': 'مصطفی',
-  //   'lastName': 'خلیلی',
+  //   'firstname': 'مصطفی',
+  //   'lastname': 'خلیلی',
   //   'mobile': '09121160998',
   // });
 

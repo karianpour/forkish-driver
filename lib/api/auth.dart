@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:for_kish_driver/helpers/types.dart';
 
-var baseUrl = 'http://192.168.1.52:4080';
+import 'backend_address.dart';
 
 Future<bool> requestVerificationCode(String mobile) async {
   // await Future.delayed(Duration(milliseconds: 200));
@@ -43,10 +43,10 @@ Future<VerificationResponse> verifyCode(String mobile, String code) async {
   // if(code == '1234'){
   //   return Driver(
   //     id: '4321-1234',
-  //     firstName: 'کیوان',
-  //     lastName: 'آرین‌پور',
-  //     firstNameEn: 'Kayvan',
-  //     lastNameEn: 'Arianpour',
+  //     firstname: 'کیوان',
+  //     lastname: 'آرین‌پور',
+  //     firstnameEn: 'Kayvan',
+  //     lastnameEn: 'Arianpour',
   //     mobile: '09121161998',
   //     photoUrl: '',
   //   );

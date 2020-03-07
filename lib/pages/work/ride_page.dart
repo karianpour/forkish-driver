@@ -27,12 +27,40 @@ Widget ridePage(BuildContext context) {
   return Stack(
     children: <Widget>[
       MapArea(state: state),
+      if(work.loaded) WorkStateRefresher(work: work),
       if(work.ride==null) Inactivator(),
       if(work.ride!=null) RideProgressPanel(),
       if(work.ride!=null && (work.accepted ?? false) && !(work.arrived ?? false)) NavigateToPickup(work.ride.pickup),
       if(work.ride!=null && (work.accepted ?? false) && (work.arrived ?? false)) NavigateToDestination(work.ride.destination),
     ],
   );
+}
+
+class WorkStateRefresher extends StatelessWidget {
+  const WorkStateRefresher({
+    Key key,
+    @required this.work,
+  }) : super(key: key);
+
+  final Work work;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: (0.0),
+      left: 0,
+      right: 0,
+      child: Container(
+        alignment: AlignmentDirectional.centerEnd,
+        child: FlatButton(
+          onPressed: (){
+            work.reinitialize();
+          },
+          child: Icon(Icons.refresh, color: Colors.black),
+        ),
+      ),
+    );
+  }
 }
 
 @widget
@@ -395,8 +423,8 @@ class MapArea extends StatelessWidget {
         onPositionChanged: (mp, r){
           state.centerChanged(mp.center);
         },
-        swPanBoundary: LatLng(26.485096, 53.869411),
-        nePanBoundary: LatLng(26.604128, 54.059012),
+        // swPanBoundary: LatLng(26.485096, 53.869411),
+        // nePanBoundary: LatLng(26.604128, 54.059012),
       ),
       layers: [
         TileLayerOptions(

@@ -146,7 +146,7 @@ Widget appDrawer(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                '${auth.driver?.firstName ?? ''} ${auth.driver?.lastName ?? ''}',
+                '${auth.driver?.firstname ?? ''} ${auth.driver?.lastname ?? ''}',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,

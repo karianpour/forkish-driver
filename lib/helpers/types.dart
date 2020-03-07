@@ -85,22 +85,22 @@ class Vehicle {
 
 class Driver {
   String id;
-  String firstName;
-  String lastName;
-  String firstNameEn;
-  String lastNameEn;
+  String firstname;
+  String lastname;
+  String firstnameEn;
+  String lastnameEn;
   String mobile;
   String photoUrl;
   List<Vehicle> vehicles;
 
-  Driver({this.id, this.firstName, this.lastName, this.firstNameEn, this.lastNameEn, this.mobile, this.photoUrl});
+  Driver({this.id, this.firstname, this.lastname, this.firstnameEn, this.lastnameEn, this.mobile, this.photoUrl});
 
   Driver.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        firstName = json['firstName'],
-        lastName = json['lastName'],
-        firstNameEn = json['firstNameEn'],
-        lastNameEn = json['lastNameEn'],
+        firstname = json['firstname'],
+        lastname = json['lastname'],
+        firstnameEn = json['firstnameEn'],
+        lastnameEn = json['lastnameEn'],
         mobile = json['mobile'],
         photoUrl = json['photoUrl'],
         vehicles = json['vehicles'] != null ? json['vehicles'].map<Vehicle>( (v) => Vehicle.fromJson(v) ).toList() : null
@@ -109,10 +109,10 @@ class Driver {
   Map<String, dynamic> toJson() =>
     {
       'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
-      'firstNameEn': firstNameEn,
-      'lastNameEn': lastNameEn,
+      'firstname': firstname,
+      'lastname': lastname,
+      'firstnameEn': firstnameEn,
+      'lastnameEn': lastnameEn,
       'mobile': mobile,
       'photoUrl': photoUrl,
       'vehicles': vehicles

@@ -28,6 +28,12 @@ class Work with ChangeNotifier {
     fetchWorkState();
   }
 
+  void reinitialize(){
+    loaded = false;
+    fetchWorkState();
+    notifyListeners();
+  }
+
   void setupState(DriverState driverState){
     this.loaded = true;
     if(driverState!=null){

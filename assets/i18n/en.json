@@ -27,10 +27,10 @@
     "failed_to_verify": "failed to verify the code"
   },
   "signup": {
-    "firstName": "First Name Farsi",
-    "lastName": "Last Name Farsi",
-    "firstNameEn": "First Name",
-    "lastNameEn": "Last Name",
+    "firstname": "First Name Farsi",
+    "lastname": "Last Name Farsi",
+    "firstnameEn": "First Name",
+    "lastnameEn": "Last Name",
     "mobile": "Mobile",
     "save": "Save",
     "mandatory": "Mandatory",

@@ -9,10 +9,10 @@ import 'package:provider/provider.dart';
 part 'profile.g.dart';
 
 class LoginData {
-  String firstName = "";
-  String lastName = "";
-  String firstNameEn = "";
-  String lastNameEn = "";
+  String firstname = "";
+  String lastname = "";
+  String firstnameEn = "";
+  String lastnameEn = "";
   String mobile = "";
 }
 
@@ -22,10 +22,10 @@ Widget profile(BuildContext context) {
   final formKey = useMemoized(()=>GlobalKey<FormState>());
   final data = useMemoized(() {
     var data = LoginData();
-    data.firstName = auth.driver.firstName;
-    data.lastName = auth.driver.lastName;
-    data.firstNameEn = auth.driver.firstNameEn;
-    data.lastNameEn = auth.driver.lastNameEn;
+    data.firstname = auth.driver.firstname;
+    data.lastname = auth.driver.lastname;
+    data.firstnameEn = auth.driver.firstnameEn;
+    data.lastnameEn = auth.driver.lastnameEn;
     data.mobile = auth.driver.mobile;
     return data;
   });
@@ -47,13 +47,13 @@ Widget profile(BuildContext context) {
               SizedBox(height: 100),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: translate('signup.firstName'),
+                  labelText: translate('signup.firstname'),
                   prefixIcon: Icon(Icons.person),
                 ),
-                initialValue: data.firstName,
+                initialValue: data.firstname,
                 keyboardType: TextInputType.text,
                 onChanged: (value){
-                  data.firstName = value;
+                  data.firstname = value;
                 },
                 validator: (value){
                   if(value=='') return translate('signup.mandatory');
@@ -63,13 +63,13 @@ Widget profile(BuildContext context) {
               SizedBox(height: 16),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: translate('signup.lastName'),
+                  labelText: translate('signup.lastname'),
                   prefixIcon: Icon(Icons.person),
                 ),
-                initialValue: data.lastName,
+                initialValue: data.lastname,
                 keyboardType: TextInputType.text,
                 onChanged: (value){
-                  data.lastName = value;
+                  data.lastname = value;
                 },
                 validator: (value){
                   if(value=='') return translate('signup.mandatory');
@@ -79,13 +79,13 @@ Widget profile(BuildContext context) {
               SizedBox(height: 16),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: translate('signup.firstNameEn'),
+                  labelText: translate('signup.firstnameEn'),
                   prefixIcon: Icon(Icons.person),
                 ),
-                initialValue: data.firstNameEn,
+                initialValue: data.firstnameEn,
                 keyboardType: TextInputType.text,
                 onChanged: (value){
-                  data.firstNameEn = value;
+                  data.firstnameEn = value;
                 },
                 validator: (value){
                   if(value=='') return translate('signup.mandatory');
@@ -95,13 +95,13 @@ Widget profile(BuildContext context) {
               SizedBox(height: 16),
               TextFormField(
                 decoration: InputDecoration(
-                  labelText: translate('signup.lastNameEn'),
+                  labelText: translate('signup.lastnameEn'),
                   prefixIcon: Icon(Icons.person),
                 ),
-                initialValue: data.lastNameEn,
+                initialValue: data.lastnameEn,
                 keyboardType: TextInputType.text,
                 onChanged: (value){
-                  data.lastNameEn = value;
+                  data.lastnameEn = value;
                 },
                 validator: (value){
                   if(value=='') return translate('signup.mandatory');
@@ -131,8 +131,8 @@ Widget profile(BuildContext context) {
                 onPressed: () async {
                   if(formKey.currentState.validate()){
                     // final result = await auth.signup(
-                    //   firstName: data.firstName,
-                    //   lastName: data.lastName,
+                    //   firstname: data.firstname,
+                    //   lastname: data.lastname,
                     //   mobile: data.mobile,
                     // );
                     // if(result){
