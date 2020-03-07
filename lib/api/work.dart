@@ -34,6 +34,7 @@ class DriverState {
 }
 
 WebSocket _ws;
+bool _isConnecting = false;
 bool _isAlive = false;
 String _token;
 Work _work;
@@ -56,7 +57,10 @@ Future<bool> ensureWsConnection() async {
 
 Future<bool> connect() async {
   try{
+    if(_isConnecting) return false;
+    _isConnecting = true;
     _ws = await WebSocket.connect('$wsBaseUrl/driver/ws');
+    _isConnecting = false;
     if (_ws?.readyState == WebSocket.open) {
       _isAlive = true;
       heartbeat();
@@ -104,9 +108,10 @@ Future<bool> connect() async {
         },
         onDone: () {
           _isAlive = false;
-          print('[+]Done :)');
+          print('Websocket closed.');
+          tryReconnect();
         },
-        onError: (err) => print('[!]Error -- ${err.toString()}'),
+        onError: (err) => print('Websocket Error -- ${err.toString()}'),
         cancelOnError: true,
       );
 
@@ -114,8 +119,10 @@ Future<bool> connect() async {
         'method': 'authenticate',
         'payload': _token,
       }));
+      return true;
+    }else{
+      tryReconnect();
     }
-    return true;
   }catch(err){
     print(err);
   }
@@ -139,6 +146,13 @@ void heartbeat(){
     }
     _isAlive = false;
     _ws.add('ping');
+  });
+}
+
+void tryReconnect(){
+  if(_isAlive) return;
+  Timer(Duration(seconds: 5), (){
+    ensureWsConnection();
   });
 }
 
@@ -175,7 +189,7 @@ void handleOfferDrawBack(payload){
 }
 
 void handlePassengerCanceled(payload){
-  //TODO
+  _work.resetRide();
 }
 
 Future<void> fetchWorkState() async {

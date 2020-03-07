@@ -55,8 +55,7 @@ class Work with ChangeNotifier {
   Future<void> activate() async {
     if(this.active) return;
     try{
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchActivate(driver.vehicles[0].id, currentPosition, this);
+      await fetchActivate(driver.vehicles[0].id, controller.currentLocation(), this);
     }catch(err){
       print(err);
     }
@@ -74,8 +73,7 @@ class Work with ChangeNotifier {
   Future<void> inactivate() async {
     if(!this.active) return;
     try{
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchInactivate(currentPosition);
+      await fetchInactivate(controller.currentLocation());
     }catch(err){
       print(err);
     }
@@ -102,8 +100,7 @@ class Work with ChangeNotifier {
     try{
       var rejectingRide = this.ride;
       resetRide();
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchRejectRide(rejectingRide.id, currentPosition);
+      await fetchRejectRide(rejectingRide.id, controller.currentLocation());
     }catch(err){
       print(err);
     }
@@ -114,8 +111,7 @@ class Work with ChangeNotifier {
     try{
       var cancellingRide = this.ride;
       resetRide();
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchCancelRide(cancellingRide.id, currentPosition);
+      await fetchCancelRide(cancellingRide.id, controller.currentLocation());
     }catch(err){
       print(err);
     }
@@ -124,8 +120,7 @@ class Work with ChangeNotifier {
   Future<void> acceptRide() async{
     if(this.ride==null || (this.accepted ?? false)) return;
     try{
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchAcceptRide(ride.id, currentPosition);
+      await fetchAcceptRide(ride.id, controller.currentLocation());
     }catch(err){
       print(err);
     }
@@ -154,8 +149,7 @@ class Work with ChangeNotifier {
   Future<void> declareArrived() async{
     if(this.ride==null || (this.arrived ?? false)) return;
     try{
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchArrived(ride.id, currentPosition);
+      await fetchArrived(ride.id, controller.currentLocation());
     }catch(err){
       print(err);
     }
@@ -169,8 +163,7 @@ class Work with ChangeNotifier {
   Future<void> declarePickedup() async{
     if(this.ride==null || (this.pickedup ?? false)) return;
     try{
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchPickedup(ride.id, currentPosition);
+      await fetchPickedup(ride.id, controller.currentLocation());
     }catch(err){
       print(err);
     }
@@ -184,8 +177,7 @@ class Work with ChangeNotifier {
   Future<void> declareAccomplished() async{
     if(this.ride==null || (this.accomplished ?? false)) return;
     try{
-      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-      await fetchAccomplished(ride.id, currentPosition);
+      await fetchAccomplished(ride.id, controller.currentLocation());
     }catch(err){
       print(err);
     }
