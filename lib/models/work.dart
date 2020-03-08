@@ -55,7 +55,8 @@ class Work with ChangeNotifier {
   Future<void> activate() async {
     if(this.active) return;
     try{
-      await fetchActivate(driver.vehicles[0].id, controller.currentLocation(), this);
+      var currentPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
+      await fetchActivate(driver.vehicles[0].id, currentPosition, this);
     }catch(err){
       print(err);
     }

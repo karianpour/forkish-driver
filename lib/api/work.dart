@@ -35,6 +35,7 @@ class DriverState {
 
 WebSocket _ws;
 bool _isConnecting = false;
+int _connectionCounter = 0;
 bool _isAlive = false;
 String _token;
 Work _work;
@@ -48,7 +49,8 @@ void registerWork(Work work){
 }
 
 Future<bool> ensureWsConnection() async {
-  if(!_isAlive){
+  if(!_isAlive || _ws==null){
+    _isAlive = false;
     var connected = await connect();
     return connected;
   }
@@ -59,11 +61,15 @@ Future<bool> connect() async {
   try{
     if(_isConnecting) return false;
     _isConnecting = true;
+    _connectionCounter++;
+    print('connecting websocket $_connectionCounter');
     _ws = await WebSocket.connect('$wsBaseUrl/driver/ws');
     _isConnecting = false;
     if (_ws?.readyState == WebSocket.open) {
+      print('websocke opened');
       _isAlive = true;
       heartbeat();
+      _ws.add('connectionCounter: $_connectionCounter');
 
       _ws.listen(
         (data) {
@@ -121,9 +127,11 @@ Future<bool> connect() async {
       }));
       return true;
     }else{
+      print('websocket connection failed, ready state : ${_ws?.readyState}');
       tryReconnect();
     }
   }catch(err){
+    _isConnecting = false;
     print(err);
   }
   return false;
@@ -131,11 +139,13 @@ Future<bool> connect() async {
 
 void pong(){
   _isAlive = true;
+  print('pong received');
 }
 
 void heartbeat(){
   Timer.periodic(Duration(seconds: 30), (timer) {
     if(_isAlive == false){
+      print('heartbeat stoping, connection is dead.');
       timer?.cancel();
       try{
         _ws?.close(1, 'no ping pong');
@@ -145,6 +155,7 @@ void heartbeat(){
       return;
     }
     _isAlive = false;
+    print('pinging server and waiting for pong');
     _ws.add('ping');
   });
 }
@@ -152,6 +163,7 @@ void heartbeat(){
 void tryReconnect(){
   if(_isAlive) return;
   Timer(Duration(seconds: 5), (){
+    print('reconnecting');
     ensureWsConnection();
   });
 }
@@ -203,7 +215,7 @@ Future<void> fetchWorkState() async {
     'method': 'initialState',
     'payload': null,
   });
-  _ws.add(msg);
+  _ws?.add(msg);
   // await Future.delayed(Duration(milliseconds: 200));
   // return DriverState.fromJson({
   //   "active": false,
