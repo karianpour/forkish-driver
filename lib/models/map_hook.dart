@@ -42,6 +42,10 @@ class MapControllerHookState extends HookState<MapControllerHookState, _MapContr
         }
         if(this._locationChangeListener != null) _locationChangeListener(position);
         // print(position == null ? 'Unknown' : position.latitude.toString() + ', ' + position.longitude.toString());
+      },
+      onError: (err) {
+        print('location cannot be obtained with error');
+        print(err);
       }
     );
 
