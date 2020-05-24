@@ -30,7 +30,7 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
   var delegate = await LocalizationDelegate.create(
-    fallbackLocale: 'fa',
+    fallbackLocale: 'en',
     supportedLocales: ['fa', 'en'],
     preferences: TranslatePreferences(),
   );
@@ -147,7 +147,7 @@ Widget appDrawer(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                '${auth.driver?.firstname ?? ''} ${auth.driver?.lastname ?? ''}',
+                '${auth.driver?.firstnameEn ?? ''} ${auth.driver?.lastnameEn ?? ''}',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,

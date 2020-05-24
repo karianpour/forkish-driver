@@ -11,7 +11,7 @@ class TranslatePreferences implements ITranslatePreferences
     {
         final preferences = await SharedPreferences.getInstance();
 
-        if(!preferences.containsKey(_selectedLocaleKey)) return const Locale('fa');
+        if(!preferences.containsKey(_selectedLocaleKey)) return const Locale('en');
 
         var locale = preferences.getString(_selectedLocaleKey);
 
