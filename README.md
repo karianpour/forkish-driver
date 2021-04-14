@@ -1,5 +1,5 @@
 # for_kish_driver
-This is a driver application for managing driver and passenger coordination. The product is designed by my friend "Mostafa Khalilnasab".
+This is a driver application for managing driver and passenger coordination. The product is designed by my friend ["Mostafa Khalilnasab"](https://github.com/mostafakhn).
 
 The back-end app is here[https://github.com/karianpour/forkish-back]
 
